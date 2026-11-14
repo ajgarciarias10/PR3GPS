@@ -1,0 +1,39 @@
+%%{init: {'sequence': {'mirrorActors': false}}}%%
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+    U->>FE: Abre la cesta
+    FE->>BE: GET /api/carrito
+    BE->>DB: findCarritoConLineas(idCarrito)
+    DB-->>BE: Carrito y List~LineaCarrito~
+    BE->>BE: Carrito.calcularSubtotal(), calcularEnvio() y calcularTotal()
+    BE-->>FE: 200 OK (Carrito con desglose de costes)
+    FE-->>U: Muestra artículos y desglose de costes
+    opt Modifica cantidad
+        U->>FE: Cambia la cantidad de un artículo
+        FE->>BE: PATCH /api/carrito/lineas/idLinea (cantidad)
+        BE->>DB: StockTalla.hayStock(cantidad)
+        DB-->>BE: boolean disponible
+        alt Stock suficiente
+            BE->>DB: Carrito.modificarCantidad(idLinea, cantidad)
+            DB-->>BE: LineaCarrito actualizada
+            BE->>BE: LineaCarrito.calcularImporte() y Carrito.calcularTotal()
+            BE-->>FE: 200 OK (Carrito actualizado)
+            FE-->>U: Actualiza importes en tiempo real
+        else Stock insuficiente
+            BE-->>FE: 409 Conflict (Stock insuficiente)
+            FE-->>U: Muestra aviso de límite de stock
+        end
+    end
+    opt Elimina artículo
+        U->>FE: Pulsa eliminar en un artículo
+        FE->>BE: DELETE /api/carrito/lineas/idLinea
+        BE->>DB: Carrito.eliminarLinea(idLinea)
+        DB-->>BE: OK
+        BE->>BE: Carrito.calcularSubtotal(), calcularEnvio() y calcularTotal()
+        BE-->>FE: 200 OK (Carrito actualizado)
+        FE-->>U: Actualiza la cesta y los totales
+    end

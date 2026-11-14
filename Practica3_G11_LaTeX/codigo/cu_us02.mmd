@@ -1,0 +1,15 @@
+flowchart LR
+    subgraph SB2 ["Ficha de producto"]
+        ConsultarFicha([Consultar ficha y seleccionar talla])
+        MostrarTallas([Mostrar tallas del producto])
+        DeshabilitarAgotadas([Deshabilitar tallas agotadas])
+        AnadirCarrito([Añadir al carrito])
+        VerGuia([Ver guía de tallas - Sprint 3])
+    end
+    Cliente("fa:fa-user<br>Cliente") --- ConsultarFicha
+    ConsultarFicha -->|«include»| MostrarTallas
+    ConsultarFicha -->|«include»| DeshabilitarAgotadas
+    AnadirCarrito -.->|«extend»| ConsultarFicha
+    VerGuia -.->|«extend»| ConsultarFicha
+    classDef actor fill:none,stroke:none;
+    class Cliente actor;

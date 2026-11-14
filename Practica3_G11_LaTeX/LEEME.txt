@@ -1,0 +1,8 @@
+Practica 3 G11 - proyecto LaTeX
+1. Subir la carpeta a Overleaf (compilador LuaLaTeX o XeLaTeX) o compilar: lualatex main.tex (dos pasadas).
+2. Colocar logo_uja.png en la raiz.
+3. Para cada diagrama: pegar codigo/<clave>.mmd en mermaid.live, comprobar, exportar PNG a figuras/<clave>.png.
+4. Sustituir cada auditorias/<clave>.tex por el informe REAL de errores de la IA (bloque rojo = pendiente).
+5. Los prompts de prompts/ son la version a enviar; si modificais un prompt, actualizad el fichero (debe ser el texto literal enviado).
+6. Resultado final: renombrar a prac3_G11.pdf.
+Convencion de claves: cu_general, er, clases, cu_us01..cu_us10, sec_us01..sec_us10.

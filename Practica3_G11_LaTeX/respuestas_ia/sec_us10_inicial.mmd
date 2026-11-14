@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+
+    U->>FE: Hace clic en Guia de Tallas en la ficha del producto
+    FE->>FE: Abre ventana modal interactiva
+    FE->>BE: GET /api/products/{id}/size-guide
+    BE->>DB: SELECT talla, pecho_cm, cintura_cm, cadera_cm FROM size_guides WHERE product_id = {id}
+    alt Guia de tallas disponible
+        DB-->>BE: Registros de medidas en cm por talla
+        BE-->>FE: 200 OK (JSON con tabla de contorno de pecho, cintura y cadera)
+        FE-->>U: Renderiza tabla interactiva de medidas en centimetros
+        opt Cliente interactua o filtra medidas en la tabla
+            U->>FE: Selecciona talla o introduce sus medidas en cm
+            FE-->>U: Resalta la fila de talla recomendada con pecho, cintura y cadera
+        end
+        U->>FE: Cierra la ventana modal
+        FE-->>U: Oculta modal y vuelve a la ficha del producto
+    else Guia de tallas no encontrada
+        DB-->>BE: Sin resultados
+        BE-->>FE: 404 Not Found (Guia de tallas no disponible para este producto)
+        FE-->>U: Muestra mensaje informativo en la ventana modal
+    end

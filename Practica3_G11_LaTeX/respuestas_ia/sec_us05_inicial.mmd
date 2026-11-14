@@ -1,0 +1,36 @@
+sequenceDiagram
+    autonumber
+    actor U as Administradora
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+
+    U->>FE: Accede al panel privado de gestion de pedidos
+    FE->>BE: GET /api/admin/orders?paymentStatus=PAID (con token JWT)
+    BE->>BE: Valida token y rol de administradora
+
+    alt No autenticado o sin permisos de administradora
+        BE-->>FE: 403 Forbidden - Acceso denegado
+        FE-->>U: Redirige a login o muestra error de acceso
+    else Autenticada como administradora
+        BE->>DB: SELECT pedidos pagados, datos de entrega del cliente y estado de envio
+        DB-->>BE: Lista de pedidos (estado Pendiente o Enviado)
+        BE-->>FE: 200 OK - JSON con lista de pedidos pagados
+        FE-->>U: Renderiza tabla privada con pedidos, datos de entrega, estado (Pendiente/Enviado) y boton de accion
+
+        opt Marcar pedido como completado / enviado
+            U->>FE: Pulsa boton para marcar pedido como completado (Enviado)
+            FE->>BE: PATCH /api/admin/orders/{id}/status (estado = ENVIADO)
+            BE->>DB: UPDATE orders SET shipping_status = 'ENVIADO' WHERE id = {id} AND payment_status = 'PAID'
+            
+            alt Pedido actualizado correctamente
+                DB-->>BE: Confirmacion de actualizacion
+                BE-->>FE: 200 OK - Estado actualizado a Enviado
+                FE-->>U: Actualiza fila en la tabla a estado Enviado y deshabilita boton
+            else Pedido no encontrado o error al actualizar
+                DB-->>BE: 0 filas afectadas / Error
+                BE-->>FE: 404 Not Found / 400 Bad Request
+                FE-->>U: Muestra notificacion de error al actualizar el pedido
+            end
+        end
+    end

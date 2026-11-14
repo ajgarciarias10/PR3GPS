@@ -1,0 +1,11 @@
+\textcolor{red}{\textbf{PENDIENTE DE COMPLETAR (borrar este bloque rojo al terminar).}}
+
+Describid aquí los errores \textbf{reales} de la primera respuesta de la IA para el diagrama ER y cómo los corrigió el equipo. Puntos que hay que comprobar:
+\begin{itemize}[leftmargin=*,nosep]
+\item Entidades omitidas (STOCK_TALLA, MEDIDA_TALLA, CUPON, PAGO, LINEA_PEDIDO).
+\item Cardinalidades erróneas (p. ej. USUARIO-PEDIDO como 1:1 o PEDIDO-PAGO mal orientada).
+\item Pedidos de invitado no contemplados (id_usuario obligatorio).
+\item Relaciones N:M sin entidad intermedia.
+\item FK ausentes o sin marcar; tipos con paréntesis (decimal(10,2)) que rompen el parser.
+\item Comentarios de atributo sin comillas dobles.
+\end{itemize}

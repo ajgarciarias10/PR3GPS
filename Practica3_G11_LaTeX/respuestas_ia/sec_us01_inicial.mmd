@@ -1,0 +1,23 @@
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+
+    U->>FE: Accede a la pagina del catalogo principal
+    FE->>BE: GET /api/products
+    BE->>DB: SELECT id, nombre, imagen, precio_iva, stock FROM productos
+    DB-->>BE: Lista de registros de productos
+
+    alt Existen productos en el catalogo
+        BE->>BE: Procesa lista y asigna distintivo de disponibilidad segun stock
+        BE-->>FE: 200 OK (Lista de productos con imagen, nombre, precio con IVA y distintivo de stock)
+        FE-->>U: Renderiza catalogo de prendas y accesorios con detalles y disponibilidad
+    else No existen productos registrados
+        BE-->>FE: 200 OK (Lista vacia)
+        FE-->>U: Muestra mensaje indicando que no hay productos disponibles
+    else Error en el servidor o base de datos
+        BE-->>FE: 500 Internal Server Error
+        FE-->>U: Muestra mensaje de error al cargar el catalogo
+    end

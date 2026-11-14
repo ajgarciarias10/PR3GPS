@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+
+    U->>FE: Ingresa codigo promocional y pulsa Aplicar
+    FE->>BE: POST /api/cart/apply-coupon (codigo, idCarrito)
+    BE->>DB: SELECT * FROM coupons WHERE code = codigo AND active = true AND expires_at > NOW()
+    DB-->>BE: Resultado de la consulta del cupon
+
+    alt Cupon valido y vigente
+        BE->>DB: UPDATE carts SET coupon_id = idCupon, discount_amount = descuento WHERE id = idCarrito
+        DB-->>BE: Confirmacion de actualizacion del carrito
+        BE-->>FE: 200 OK (subtotal, descuento, nuevoTotal, codigoAplicado)
+        FE-->>U: Actualiza vista del carrito con deduccion visual inmediata en el total
+    else Cupon invalido, expirado o no encontrado
+        BE-->>FE: 400 Bad Request (Mensaje: El cupon ingresado no es valido o ha expirado)
+        FE-->>U: Muestra alerta de error y mantiene el total original sin cambios
+    end

@@ -1,0 +1,18 @@
+%%{init: {'sequence': {'mirrorActors': false}}}%%
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+    U->>FE: Abre la página de catálogo
+    FE->>BE: GET /api/productos
+    BE->>DB: findAllProductosConStock()
+    DB-->>BE: List~Producto~ y List~StockTalla~
+    BE->>BE: Producto.estaDisponible() y Producto.tallasDisponibles()
+    BE-->>FE: 200 OK (List~Producto~)
+    alt Hay productos
+        FE-->>U: Muestra tarjetas con imagen, nombre, precioIva y disponibilidad
+    else Catálogo vacío
+        FE-->>U: Muestra mensaje de catálogo sin productos
+    end

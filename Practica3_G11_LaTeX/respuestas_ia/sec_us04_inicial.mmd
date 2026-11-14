@@ -1,0 +1,37 @@
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+    participant PG as Pasarela de Pago
+    participant BK as Banco
+    participant EM as Servicio de Correo
+
+    U->>FE: Introduce datos de tarjeta y confirma pago
+    FE->>BE: POST /api/checkout/payment (datos de pedido y token de tarjeta)
+    BE->>DB: INSERT INTO orders (estado PENDIENTE)
+    DB-->>BE: Pedido creado con ID de pedido
+    BE->>PG: Solicita inicio de cobro con soporte 3D Secure
+    PG->>BK: Solicita autenticacion 3D Secure
+    BK-->>U: Solicita validacion 3D Secure (OTP o App bancaria)
+
+    alt Autenticacion 3D Secure y cobro exitosos
+        U->>BK: Aprueba autenticacion 3D Secure
+        BK-->>PG: Autorizacion de cargo aprobada
+        PG-->>BE: Webhook / Respuesta de pago completado (transaccion exitosa)
+        BE->>DB: UPDATE orders SET status = PAGADO WHERE id = order_id
+        DB-->>BE: Confirmacion de actualizacion de pedido
+        BE->>EM: Solicita envio de correo con numero de pedido
+        EM-->>U: Envia email de confirmacion con numero de pedido
+        BE-->>FE: 200 OK (pago confirmado y numero de pedido)
+        FE-->>U: Muestra pantalla de confirmacion con numero de pedido
+    else Fallo en 3D Secure o tarjeta rechazada
+        U->>BK: Cancela o falla autenticacion 3D Secure
+        BK-->>PG: Autorizacion denegada
+        PG-->>BE: Respuesta de pago rechazado
+        BE->>DB: UPDATE orders SET status = FALLIDO WHERE id = order_id
+        DB-->>BE: Confirmacion de actualizacion de estado
+        BE-->>FE: 402 Payment Required (error en el procesamiento del pago)
+        FE-->>U: Muestra mensaje de error de pago en pantalla
+    end

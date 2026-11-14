@@ -1,0 +1,22 @@
+%%{init: {'sequence': {'mirrorActors': false}}}%%
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+    U->>FE: Selecciona categoría y talla
+    FE->>BE: GET /api/productos (categoria, talla)
+    BE->>DB: findProductosByCategoriaAndTalla(categoria, talla)
+    DB-->>BE: List~Producto~ y totalCoincidentes
+    BE->>BE: Producto.estaDisponible()
+    BE-->>FE: 200 OK (List~Producto~, totalCoincidentes)
+    FE-->>U: Actualiza el listado sin recargar y muestra el contador
+    opt Limpia los filtros
+        U->>FE: Pulsa Limpiar filtros
+        FE->>BE: GET /api/productos
+        BE->>DB: findAllProductosConStock()
+        DB-->>BE: List~Producto~ y totalProductos
+        BE-->>FE: 200 OK (List~Producto~, totalProductos)
+        FE-->>U: Restablece el listado y el contador
+    end

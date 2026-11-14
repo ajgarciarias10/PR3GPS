@@ -1,0 +1,28 @@
+%%{init: {'sequence': {'mirrorActors': false}}}%%
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+    U->>FE: Selecciona un producto del catálogo
+    FE->>BE: GET /api/productos/id
+    BE->>DB: findProductoById(id) y findStockByProducto(id)
+    DB-->>BE: Producto y List~StockTalla~
+    BE->>BE: Producto.tallasDisponibles()
+    BE-->>FE: 200 OK (Producto, tallasDisponibles)
+    FE-->>U: Muestra ficha con selector de talla (agotadas deshabilitadas)
+    U->>FE: Elige talla y pulsa Añadir al carrito
+    FE->>BE: POST /api/carrito/lineas (idProducto, talla, cantidad)
+    BE->>DB: StockTalla.hayStock(cantidad)
+    DB-->>BE: boolean disponible
+    alt Stock suficiente
+        BE->>DB: Carrito.agregarProducto(p, talla, cantidad)
+        DB-->>BE: LineaCarrito actualizada
+        BE->>BE: LineaCarrito.calcularImporte() y Carrito.calcularTotal()
+        BE-->>FE: 201 Created (Carrito actualizado)
+        FE-->>U: Confirma que el artículo está en la cesta
+    else Talla agotada
+        BE-->>FE: 409 Conflict (Sin stock en talla)
+        FE-->>U: Muestra aviso de talla agotada
+    end

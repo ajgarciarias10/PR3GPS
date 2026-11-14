@@ -1,0 +1,46 @@
+%%{init: {'sequence': {'mirrorActors': false}}}%%
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+    U->>FE: Rellena el formulario de registro
+    FE->>FE: validarPasswordSegura(password)
+    FE->>BE: POST /api/auth/registro (nombre, email, password)
+    BE->>DB: existsUsuarioByEmail(email)
+    DB-->>BE: boolean existe
+    alt Email nuevo
+        BE->>BE: hashPassword(password)
+        BE->>DB: Cliente.registrarse(nombre, email, passwordHash)
+        DB-->>BE: Cliente (idUsuario)
+        BE-->>FE: 201 Created (Cliente)
+        FE-->>U: Confirma el registro
+    else Email ya registrado
+        BE-->>FE: 409 Conflict (Email en uso)
+        FE-->>U: Muestra error de email en uso
+    end
+    U->>FE: Inicia sesión con email, contraseña y recordar sesión
+    FE->>BE: POST /api/auth/login (email, password, recordarSesion)
+    BE->>DB: findUsuarioByEmail(email)
+    DB-->>BE: Cliente (passwordHash)
+    BE->>BE: Usuario.iniciarSesion(email, password)
+    alt Credenciales correctas
+        BE-->>FE: 200 OK (tokenSesion con expiración según recordarSesion)
+        FE->>BE: GET /api/cuenta/pedidos
+        BE->>DB: Cliente.consultarHistorial()
+        DB-->>BE: List~Pedido~
+        BE-->>FE: 200 OK (List~Pedido~)
+        FE-->>U: Muestra panel con listado de pedidos anteriores
+    else Credenciales incorrectas
+        BE-->>FE: 401 Unauthorized
+        FE-->>U: Muestra error de acceso
+    end
+    opt Guarda dirección de envío
+        U->>FE: Añade una dirección en su cuenta
+        FE->>BE: POST /api/cuenta/direcciones (Direccion)
+        BE->>DB: Cliente.guardarDireccion(Direccion)
+        DB-->>BE: Direccion guardada
+        BE-->>FE: 201 Created (Direccion)
+        FE-->>U: Muestra la dirección guardada
+    end

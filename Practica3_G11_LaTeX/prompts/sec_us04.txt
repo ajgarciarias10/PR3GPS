@@ -1,0 +1,8 @@
+Actúa como un Arquitecto de Software experto en UML y Mermaid. Analiza la siguiente Historia de Usuario de un e-commerce de moda (frontend React/Next.js, backend Node.js, base de datos PostgreSQL) y genera el código Mermaid de su Diagrama de Secuencia siguiendo estrictamente estas reglas:
+1. Cabecera 'sequenceDiagram' y 'autonumber'.
+2. Participantes en este orden: actor U as Cliente, participant FE as Frontend, participant BE as Backend, participant DB as Base de datos. Añade participantes externos solo si la historia lo exige (pasarela de pago, servicio de correo, banco).
+3. Usa ->> para mensajes síncronos y -->> para respuestas. Incluye las rutas REST (GET/POST/PATCH/PUT/DELETE /api/...) y códigos HTTP en las respuestas.
+4. Modela los flujos alternativos de los criterios de aceptación con alt/else/end y los opcionales con opt/end.
+5. No uses los caracteres ; ni # dentro de los mensajes. No uses nombres con acentos en identificadores de participantes.
+6. Devuelve únicamente el bloque de código Mermaid, sin explicaciones.
+Historia de Usuario a procesar: US-4. Procesamiento de Pago con Tarjeta (Checkout) (Sprint 1). Como cliente, quiero pagar mi pedido mediante tarjeta de débito o crédito para formalizar la compra de manera inmediata. Criterios de aceptación: Integración con pasarela bancaria segura con soporte 3D Secure. Confirmación en pantalla y envío de email con número de pedido.

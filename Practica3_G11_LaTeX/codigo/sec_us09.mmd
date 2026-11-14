@@ -1,0 +1,22 @@
+%%{init: {'sequence': {'mirrorActors': false}}}%%
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+    U->>FE: Introduce el código promocional y pulsa Aplicar
+    FE->>BE: PUT /api/carrito/cupon (codigo)
+    BE->>DB: findCuponByCodigo(codigo)
+    DB-->>BE: Cupon o null
+    BE->>BE: Cupon.esValido()
+    alt Cupón válido y vigente
+        BE->>DB: Carrito.aplicarCupon(codigo)
+        DB-->>BE: Carrito actualizado
+        BE->>BE: Cupon.calcularDescuento(subtotal) y Carrito.calcularTotal()
+        BE-->>FE: 200 OK (Carrito con descuento aplicado)
+        FE-->>U: Muestra la deducción visual inmediata en el total
+    else Inexistente o caducado
+        BE-->>FE: 422 Unprocessable Entity (Cupón no válido)
+        FE-->>U: Muestra error de cupón no válido
+    end

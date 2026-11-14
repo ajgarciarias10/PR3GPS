@@ -1,0 +1,21 @@
+%%{init: {'sequence': {'mirrorActors': false}}}%%
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+    U->>FE: Pulsa Guía de tallas en la ficha del producto
+    FE->>BE: GET /api/categorias/idCategoria/medidas
+    BE->>DB: Categoria.obtenerMedidas(idCategoria)
+    DB-->>BE: List~MedidaTalla~ (pechoCm, cinturaCm, caderaCm)
+    BE-->>FE: 200 OK (List~MedidaTalla~)
+    FE-->>U: Abre ventana modal con tabla de medidas en centímetros
+    opt Elige talla desde la guía
+        U->>FE: Selecciona la talla recomendada
+        FE-->>U: Cierra el modal y marca la talla en la ficha
+    end
+    opt Cierra la guía
+        U->>FE: Cierra la ventana modal
+        FE-->>U: Vuelve a la ficha del producto
+    end

@@ -1,0 +1,110 @@
+erDiagram
+    USUARIO {
+        int id_usuario PK
+        string nombre
+        string email UK
+        string password_hash
+        string telefono
+        string rol "CLIENTE o ADMIN"
+        datetime fecha_registro
+    }
+    DIRECCION {
+        int id_direccion PK
+        int id_usuario FK
+        string direccion
+        string codigo_postal
+        string ciudad
+        string provincia
+    }
+    CATEGORIA {
+        int id_categoria PK
+        string nombre UK
+    }
+    MEDIDA_TALLA {
+        int id_medida PK
+        int id_categoria FK
+        string talla
+        int pecho_cm
+        int cintura_cm
+        int cadera_cm
+    }
+    PRODUCTO {
+        int id_producto PK
+        int id_categoria FK
+        string nombre
+        string descripcion
+        decimal precio_iva
+        string imagen_url
+        boolean activo
+    }
+    STOCK_TALLA {
+        int id_stock PK
+        int id_producto FK
+        string talla
+        int unidades
+    }
+    CARRITO {
+        int id_carrito PK
+        int id_usuario FK "nulo si es invitado"
+        string cupon_codigo FK
+        datetime actualizado_en
+    }
+    LINEA_CARRITO {
+        int id_linea_carrito PK
+        int id_carrito FK
+        int id_producto FK
+        string talla
+        int cantidad
+    }
+    CUPON {
+        string codigo PK
+        string tipo "PORCENTAJE o IMPORTE"
+        decimal valor
+        date fecha_caducidad
+        boolean activo
+    }
+    PEDIDO {
+        int id_pedido PK
+        string numero_pedido UK
+        int id_usuario FK "nulo si es invitado"
+        string cupon_codigo FK
+        datetime fecha
+        string estado "PENDIENTE o ENVIADO"
+        string email_contacto
+        string telefono_contacto
+        string direccion_envio
+        decimal subtotal
+        decimal gastos_envio
+        decimal descuento
+        decimal total
+    }
+    LINEA_PEDIDO {
+        int id_linea_pedido PK
+        int id_pedido FK
+        int id_producto FK
+        string talla
+        int cantidad
+        decimal precio_unitario
+    }
+    PAGO {
+        int id_pago PK
+        int id_pedido FK
+        string metodo "TARJETA o BIZUM"
+        string estado "APROBADO o RECHAZADO"
+        string referencia_pasarela
+        decimal importe
+        datetime fecha
+    }
+    USUARIO ||--o{ DIRECCION : "guarda"
+    USUARIO ||--o{ PEDIDO : "realiza"
+    USUARIO |o--o| CARRITO : "tiene"
+    CATEGORIA ||--o{ PRODUCTO : "clasifica"
+    CATEGORIA ||--o{ MEDIDA_TALLA : "define guía de tallas"
+    PRODUCTO ||--|{ STOCK_TALLA : "tiene existencias por"
+    CARRITO ||--o{ LINEA_CARRITO : "contiene"
+    PRODUCTO ||--o{ LINEA_CARRITO : "se añade en"
+    CUPON |o--o{ CARRITO : "se aplica a"
+    CUPON |o--o{ PEDIDO : "descuenta en"
+    PEDIDO ||--|{ LINEA_PEDIDO : "se compone de"
+    PRODUCTO ||--o{ LINEA_PEDIDO : "se vende en"
+    PEDIDO ||--o{ PAGO : "se abona con"
