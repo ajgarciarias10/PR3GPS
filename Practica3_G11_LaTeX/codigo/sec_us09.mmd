@@ -10,7 +10,7 @@ sequenceDiagram
     BE->>DB: findCuponByCodigo(codigo)
     DB-->>BE: Cupon o null
     BE->>BE: Cupon.esValido()
-    alt Cupón válido y vigente
+    alt esValido() == true
         BE->>BE: Carrito.aplicarCupon(codigo)
         BE->>BE: Cupon.calcularDescuento(subtotal)
         BE->>BE: Carrito.calcularTotal()
@@ -18,7 +18,7 @@ sequenceDiagram
         DB-->>BE: OK
         BE-->>FE: 200 OK : Carrito con descuento
         FE-->>U: actualizarTotal(carrito)
-    else Inexistente o caducado
+    else cupon == null or esValido() == false
         BE-->>FE: 422 Unprocessable Entity
         FE-->>U: mostrarErrorCupon()
     end

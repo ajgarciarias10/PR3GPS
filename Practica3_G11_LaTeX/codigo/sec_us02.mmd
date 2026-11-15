@@ -20,7 +20,7 @@ sequenceDiagram
     BE->>DB: findStockByTalla(idProducto, talla)
     DB-->>BE: StockTalla
     BE->>BE: StockTalla.hayStock(cantidad)
-    alt Stock suficiente
+    alt hayStock(cantidad) == true
         BE->>BE: Carrito.agregarProducto(p, talla, cantidad)
         BE->>BE: LineaCarrito.calcularImporte()
         BE->>BE: Carrito.calcularTotal()
@@ -28,7 +28,7 @@ sequenceDiagram
         DB-->>BE: OK
         BE-->>FE: 201 Created : Carrito
         FE-->>U: mostrarConfirmacionCesta()
-    else Talla agotada
+    else hayStock(cantidad) == false
         BE-->>FE: 409 Conflict
         FE-->>U: mostrarAvisoTallaAgotada(talla)
     end

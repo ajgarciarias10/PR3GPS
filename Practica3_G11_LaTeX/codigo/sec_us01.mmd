@@ -9,13 +9,13 @@ sequenceDiagram
     FE->>BE: listarProductos() : GET /api/productos
     BE->>DB: findAllProductosConStock()
     DB-->>BE: Producto[] con StockTalla[]
-    loop Por cada producto
+    loop for producto in productos
         BE->>BE: Producto.estaDisponible()
         BE->>BE: Producto.tallasDisponibles()
     end
     BE-->>FE: 200 OK : Producto[]
-    alt Hay productos
+    alt productos.size() > 0
         FE-->>U: mostrarTarjetas(productos)
-    else Catálogo vacío
+    else productos.size() == 0
         FE-->>U: mostrarCatalogoVacio()
     end

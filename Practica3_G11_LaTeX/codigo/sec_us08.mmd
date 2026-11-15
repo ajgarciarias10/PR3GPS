@@ -10,14 +10,14 @@ sequenceDiagram
     FE->>BE: registrar(nombre, email, password) : POST /api/auth/registro
     BE->>DB: existsUsuarioByEmail(email)
     DB-->>BE: boolean existe
-    alt Email nuevo
+    alt existsUsuarioByEmail(email) == false
         BE->>BE: hashPassword(password)
         BE->>BE: Cliente.registrarse(nombre, email, passwordHash)
         BE->>DB: saveCliente(cliente)
         DB-->>BE: idUsuario
         BE-->>FE: 201 Created : Cliente
         FE-->>U: mostrarRegistroCompletado()
-    else Email ya registrado
+    else existsUsuarioByEmail(email) == true
         BE-->>FE: 409 Conflict
         FE-->>U: mostrarErrorEmailEnUso()
     end
@@ -26,7 +26,7 @@ sequenceDiagram
     BE->>DB: findUsuarioByEmail(email)
     DB-->>BE: Cliente (passwordHash)
     BE->>BE: Usuario.iniciarSesion(email, password)
-    alt Credenciales correctas
+    alt iniciarSesion() == true
         BE-->>FE: 200 OK : tokenSesion
         FE->>BE: obtenerHistorial() : GET /api/cuenta/pedidos
         BE->>BE: Cliente.consultarHistorial()
@@ -34,11 +34,11 @@ sequenceDiagram
         DB-->>BE: Pedido[]
         BE-->>FE: 200 OK : Pedido[]
         FE-->>U: mostrarHistorial(pedidos)
-    else Credenciales incorrectas
+    else iniciarSesion() == false
         BE-->>FE: 401 Unauthorized
         FE-->>U: mostrarErrorAcceso()
     end
-    opt Guarda dirección de envío
+    opt anadirDireccion(direccion)
         U->>FE: anadirDireccion(direccion)
         FE->>BE: guardarDireccion(direccion) : POST /api/cuenta/direcciones
         BE->>BE: Cliente.guardarDireccion(Direccion)

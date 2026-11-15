@@ -14,13 +14,13 @@ sequenceDiagram
     BE->>BE: Carrito.calcularTotal()
     BE-->>FE: 200 OK : Carrito con desglose
     FE-->>U: mostrarCesta(carrito)
-    opt Modifica cantidad
+    opt cambiarCantidad(idLinea, cantidad)
         U->>FE: cambiarCantidad(idLinea, cantidad)
         FE->>BE: modificarLinea(idLinea, cantidad) : PATCH /api/carrito/lineas/idLinea
         BE->>DB: findStockByLinea(idLinea)
         DB-->>BE: StockTalla
         BE->>BE: StockTalla.hayStock(cantidad)
-        alt Stock suficiente
+        alt hayStock(cantidad) == true
             BE->>BE: Carrito.modificarCantidad(idLinea, cantidad)
             BE->>BE: LineaCarrito.calcularImporte()
             BE->>BE: Carrito.calcularTotal()
@@ -28,12 +28,12 @@ sequenceDiagram
             DB-->>BE: OK
             BE-->>FE: 200 OK : Carrito
             FE-->>U: actualizarImportes(carrito)
-        else Stock insuficiente
+        else hayStock(cantidad) == false
             BE-->>FE: 409 Conflict
             FE-->>U: mostrarAvisoStock(unidadesMax)
         end
     end
-    opt Elimina artículo
+    opt eliminarArticulo(idLinea)
         U->>FE: eliminarArticulo(idLinea)
         FE->>BE: eliminarLinea(idLinea) : DELETE /api/carrito/lineas/idLinea
         BE->>BE: Carrito.eliminarLinea(idLinea)

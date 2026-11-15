@@ -9,13 +9,13 @@ sequenceDiagram
     FE->>BE: filtrarProductos(categoria, talla) : GET /api/productos
     BE->>DB: findProductosByCategoriaAndTalla(categoria, talla)
     DB-->>BE: Producto[], totalCoincidentes
-    loop Por cada producto
+    loop for producto in productos
         BE->>BE: Producto.estaDisponible()
     end
     BE-->>FE: 200 OK : Producto[], totalCoincidentes
     FE->>FE: actualizarListado(productos)
     FE-->>U: mostrarContador(totalCoincidentes)
-    opt Limpia los filtros
+    opt limpiarFiltros()
         U->>FE: limpiarFiltros()
         FE->>BE: listarProductos() : GET /api/productos
         BE->>DB: findAllProductosConStock()

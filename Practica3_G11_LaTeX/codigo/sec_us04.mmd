@@ -15,8 +15,8 @@ sequenceDiagram
     DB-->>BE: Pedido (idPedido, numeroPedido)
     BE->>PG: PasarelaPago.cobrar(PagoTarjeta)
     PG->>U: PagoTarjeta.autenticar3DS()
-    U-->>PG: codigoConfirmacion3DS
-    alt Pago aprobado
+    U->>PG: confirmar3DS(codigoOTP)
+    alt cobrar() == true
         PG-->>BE: true : referencia
         BE->>DB: savePago(APROBADO)
         BE->>DB: descontarStock()
@@ -26,7 +26,7 @@ sequenceDiagram
         CO-->>BE: OK
         BE-->>FE: 200 OK : numeroPedido
         FE-->>U: mostrarConfirmacion(numeroPedido)
-    else Pago rechazado
+    else cobrar() == false
         PG-->>BE: false
         BE->>DB: savePago(RECHAZADO)
         BE->>DB: liberarReservaStock()

@@ -12,12 +12,12 @@ sequenceDiagram
     BE->>BE: Categoria.obtenerMedidas()
     BE-->>FE: 200 OK : MedidaTalla[] (pechoCm, cinturaCm, caderaCm)
     FE-->>U: mostrarModalMedidas(medidas)
-    opt Elige talla desde la guía
+    opt seleccionarTalla(talla)
         U->>FE: seleccionarTalla(talla)
         FE->>FE: cerrarModal()
         FE-->>U: marcarTallaEnFicha(talla)
     end
-    opt Cierra la guía
+    opt cerrarGuia()
         U->>FE: cerrarGuia()
         FE->>FE: cerrarModal()
         FE-->>U: mostrarFicha(producto)
