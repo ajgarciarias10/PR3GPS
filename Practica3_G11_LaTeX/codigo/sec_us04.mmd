@@ -7,26 +7,30 @@ sequenceDiagram
     participant DB as Base de datos
     participant PG as Pasarela de pago
     participant CO as Servicio de correo
-    U->>FE: Rellena envío y datos de tarjeta y pulsa Pagar
+    U->>FE: pagar(datosEnvio, datosTarjeta)
     FE->>FE: validarCamposTarjeta()
-    FE->>BE: POST /api/pedidos (contacto, direccionEnvio, datosTarjeta)
-    BE->>DB: StockTalla.reservar(cantidad) y savePedido(PENDIENTE)
+    FE->>BE: crearPedido(contacto, direccionEnvio, datosTarjeta) : POST /api/pedidos
+    BE->>BE: StockTalla.reservar(cantidad)
+    BE->>DB: savePedido(PENDIENTE)
     DB-->>BE: Pedido (idPedido, numeroPedido)
     BE->>PG: PasarelaPago.cobrar(PagoTarjeta)
-    PG-->>U: PagoTarjeta.autenticar3DS()
-    U->>PG: Confirma autenticación 3D Secure
+    PG->>U: PagoTarjeta.autenticar3DS()
+    U-->>PG: codigoConfirmacion3DS
     alt Pago aprobado
-        PG-->>BE: true (referencia, estado APROBADO)
-        BE->>DB: savePago(APROBADO), descontarStock() y vaciarCarrito()
+        PG-->>BE: true : referencia
+        BE->>DB: savePago(APROBADO)
+        BE->>DB: descontarStock()
+        BE->>DB: vaciarCarrito()
         DB-->>BE: OK
         BE->>CO: ServicioCorreo.enviarConfirmacion(Pedido)
         CO-->>BE: OK
-        BE-->>FE: 200 OK (Pedido confirmado, numeroPedido)
-        FE-->>U: Muestra pantalla de confirmación
+        BE-->>FE: 200 OK : numeroPedido
+        FE-->>U: mostrarConfirmacion(numeroPedido)
     else Pago rechazado
-        PG-->>BE: false (estado RECHAZADO)
-        BE->>DB: savePago(RECHAZADO) y liberarReservaStock()
+        PG-->>BE: false
+        BE->>DB: savePago(RECHAZADO)
+        BE->>DB: liberarReservaStock()
         DB-->>BE: OK
         BE-->>FE: 402 Payment Required
-        FE-->>U: Muestra error y conserva los datos de la cesta
+        FE-->>U: mostrarErrorPago()
     end

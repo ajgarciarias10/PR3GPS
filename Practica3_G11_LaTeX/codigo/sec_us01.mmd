@@ -5,14 +5,17 @@ sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
     participant DB as Base de datos
-    U->>FE: Abre la página de catálogo
-    FE->>BE: GET /api/productos
+    U->>FE: abrirCatalogo()
+    FE->>BE: listarProductos() : GET /api/productos
     BE->>DB: findAllProductosConStock()
-    DB-->>BE: List~Producto~ y List~StockTalla~
-    BE->>BE: Producto.estaDisponible() y Producto.tallasDisponibles()
-    BE-->>FE: 200 OK (List~Producto~)
+    DB-->>BE: Producto[] con StockTalla[]
+    loop Por cada producto
+        BE->>BE: Producto.estaDisponible()
+        BE->>BE: Producto.tallasDisponibles()
+    end
+    BE-->>FE: 200 OK : Producto[]
     alt Hay productos
-        FE-->>U: Muestra tarjetas con imagen, nombre, precioIva y disponibilidad
+        FE-->>U: mostrarTarjetas(productos)
     else Catálogo vacío
-        FE-->>U: Muestra mensaje de catálogo sin productos
+        FE-->>U: mostrarCatalogoVacio()
     end

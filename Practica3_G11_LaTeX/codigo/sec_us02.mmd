@@ -5,24 +5,30 @@ sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
     participant DB as Base de datos
-    U->>FE: Selecciona un producto del catálogo
-    FE->>BE: GET /api/productos/id
-    BE->>DB: findProductoById(id) y findStockByProducto(id)
-    DB-->>BE: Producto y List~StockTalla~
+    U->>FE: seleccionarProducto(idProducto)
+    FE->>BE: obtenerDetalle(idProducto) : GET /api/productos/id
+    BE->>DB: findProductoById(id)
+    DB-->>BE: Producto
+    BE->>DB: findStockByProducto(id)
+    DB-->>BE: StockTalla[]
     BE->>BE: Producto.tallasDisponibles()
-    BE-->>FE: 200 OK (Producto, tallasDisponibles)
-    FE-->>U: Muestra ficha con selector de talla (agotadas deshabilitadas)
-    U->>FE: Elige talla y pulsa Añadir al carrito
-    FE->>BE: POST /api/carrito/lineas (idProducto, talla, cantidad)
-    BE->>DB: StockTalla.hayStock(cantidad)
-    DB-->>BE: boolean disponible
+    BE-->>FE: 200 OK : Producto, tallasDisponibles
+    FE->>FE: deshabilitarTallasAgotadas(tallas)
+    FE-->>U: mostrarFicha(producto)
+    U->>FE: anadirAlCarrito(talla, cantidad)
+    FE->>BE: agregarLinea(idProducto, talla, cantidad) : POST /api/carrito/lineas
+    BE->>DB: findStockByTalla(idProducto, talla)
+    DB-->>BE: StockTalla
+    BE->>BE: StockTalla.hayStock(cantidad)
     alt Stock suficiente
-        BE->>DB: Carrito.agregarProducto(p, talla, cantidad)
-        DB-->>BE: LineaCarrito actualizada
-        BE->>BE: LineaCarrito.calcularImporte() y Carrito.calcularTotal()
-        BE-->>FE: 201 Created (Carrito actualizado)
-        FE-->>U: Confirma que el artículo está en la cesta
+        BE->>BE: Carrito.agregarProducto(p, talla, cantidad)
+        BE->>BE: LineaCarrito.calcularImporte()
+        BE->>BE: Carrito.calcularTotal()
+        BE->>DB: saveCarrito(carrito)
+        DB-->>BE: OK
+        BE-->>FE: 201 Created : Carrito
+        FE-->>U: mostrarConfirmacionCesta()
     else Talla agotada
-        BE-->>FE: 409 Conflict (Sin stock en talla)
-        FE-->>U: Muestra aviso de talla agotada
+        BE-->>FE: 409 Conflict
+        FE-->>U: mostrarAvisoTallaAgotada(talla)
     end

@@ -5,42 +5,45 @@ sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
     participant DB as Base de datos
-    U->>FE: Rellena el formulario de registro
+    U->>FE: enviarRegistro(nombre, email, password)
     FE->>FE: validarPasswordSegura(password)
-    FE->>BE: POST /api/auth/registro (nombre, email, password)
+    FE->>BE: registrar(nombre, email, password) : POST /api/auth/registro
     BE->>DB: existsUsuarioByEmail(email)
     DB-->>BE: boolean existe
     alt Email nuevo
         BE->>BE: hashPassword(password)
-        BE->>DB: Cliente.registrarse(nombre, email, passwordHash)
-        DB-->>BE: Cliente (idUsuario)
-        BE-->>FE: 201 Created (Cliente)
-        FE-->>U: Confirma el registro
+        BE->>BE: Cliente.registrarse(nombre, email, passwordHash)
+        BE->>DB: saveCliente(cliente)
+        DB-->>BE: idUsuario
+        BE-->>FE: 201 Created : Cliente
+        FE-->>U: mostrarRegistroCompletado()
     else Email ya registrado
-        BE-->>FE: 409 Conflict (Email en uso)
-        FE-->>U: Muestra error de email en uso
+        BE-->>FE: 409 Conflict
+        FE-->>U: mostrarErrorEmailEnUso()
     end
-    U->>FE: Inicia sesión con email, contraseña y recordar sesión
-    FE->>BE: POST /api/auth/login (email, password, recordarSesion)
+    U->>FE: enviarLogin(email, password, recordarSesion)
+    FE->>BE: login(email, password, recordarSesion) : POST /api/auth/login
     BE->>DB: findUsuarioByEmail(email)
     DB-->>BE: Cliente (passwordHash)
     BE->>BE: Usuario.iniciarSesion(email, password)
     alt Credenciales correctas
-        BE-->>FE: 200 OK (tokenSesion con expiración según recordarSesion)
-        FE->>BE: GET /api/cuenta/pedidos
-        BE->>DB: Cliente.consultarHistorial()
-        DB-->>BE: List~Pedido~
-        BE-->>FE: 200 OK (List~Pedido~)
-        FE-->>U: Muestra panel con listado de pedidos anteriores
+        BE-->>FE: 200 OK : tokenSesion
+        FE->>BE: obtenerHistorial() : GET /api/cuenta/pedidos
+        BE->>BE: Cliente.consultarHistorial()
+        BE->>DB: findPedidosByCliente(idUsuario)
+        DB-->>BE: Pedido[]
+        BE-->>FE: 200 OK : Pedido[]
+        FE-->>U: mostrarHistorial(pedidos)
     else Credenciales incorrectas
         BE-->>FE: 401 Unauthorized
-        FE-->>U: Muestra error de acceso
+        FE-->>U: mostrarErrorAcceso()
     end
     opt Guarda dirección de envío
-        U->>FE: Añade una dirección en su cuenta
-        FE->>BE: POST /api/cuenta/direcciones (Direccion)
-        BE->>DB: Cliente.guardarDireccion(Direccion)
-        DB-->>BE: Direccion guardada
-        BE-->>FE: 201 Created (Direccion)
-        FE-->>U: Muestra la dirección guardada
+        U->>FE: anadirDireccion(direccion)
+        FE->>BE: guardarDireccion(direccion) : POST /api/cuenta/direcciones
+        BE->>BE: Cliente.guardarDireccion(Direccion)
+        BE->>DB: saveDireccion(direccion)
+        DB-->>BE: OK
+        BE-->>FE: 201 Created : Direccion
+        FE-->>U: mostrarDireccion(direccion)
     end

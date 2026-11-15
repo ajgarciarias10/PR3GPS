@@ -5,18 +5,22 @@ sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
     participant DB as Base de datos
-    U->>FE: Selecciona categoría y talla
-    FE->>BE: GET /api/productos (categoria, talla)
+    U->>FE: aplicarFiltros(categoria, talla)
+    FE->>BE: filtrarProductos(categoria, talla) : GET /api/productos
     BE->>DB: findProductosByCategoriaAndTalla(categoria, talla)
-    DB-->>BE: List~Producto~ y totalCoincidentes
-    BE->>BE: Producto.estaDisponible()
-    BE-->>FE: 200 OK (List~Producto~, totalCoincidentes)
-    FE-->>U: Actualiza el listado sin recargar y muestra el contador
+    DB-->>BE: Producto[], totalCoincidentes
+    loop Por cada producto
+        BE->>BE: Producto.estaDisponible()
+    end
+    BE-->>FE: 200 OK : Producto[], totalCoincidentes
+    FE->>FE: actualizarListado(productos)
+    FE-->>U: mostrarContador(totalCoincidentes)
     opt Limpia los filtros
-        U->>FE: Pulsa Limpiar filtros
-        FE->>BE: GET /api/productos
+        U->>FE: limpiarFiltros()
+        FE->>BE: listarProductos() : GET /api/productos
         BE->>DB: findAllProductosConStock()
-        DB-->>BE: List~Producto~ y totalProductos
-        BE-->>FE: 200 OK (List~Producto~, totalProductos)
-        FE-->>U: Restablece el listado y el contador
+        DB-->>BE: Producto[], totalProductos
+        BE-->>FE: 200 OK : Producto[], totalProductos
+        FE->>FE: actualizarListado(productos)
+        FE-->>U: mostrarContador(totalProductos)
     end

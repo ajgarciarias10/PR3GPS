@@ -5,17 +5,20 @@ sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
     participant DB as Base de datos
-    U->>FE: Pulsa Guía de tallas en la ficha del producto
-    FE->>BE: GET /api/categorias/idCategoria/medidas
-    BE->>DB: Categoria.obtenerMedidas(idCategoria)
-    DB-->>BE: List~MedidaTalla~ (pechoCm, cinturaCm, caderaCm)
-    BE-->>FE: 200 OK (List~MedidaTalla~)
-    FE-->>U: Abre ventana modal con tabla de medidas en centímetros
+    U->>FE: abrirGuiaTallas(idProducto)
+    FE->>BE: obtenerMedidas(idCategoria) : GET /api/categorias/idCategoria/medidas
+    BE->>DB: findMedidasByCategoria(idCategoria)
+    DB-->>BE: MedidaTalla[]
+    BE->>BE: Categoria.obtenerMedidas()
+    BE-->>FE: 200 OK : MedidaTalla[] (pechoCm, cinturaCm, caderaCm)
+    FE-->>U: mostrarModalMedidas(medidas)
     opt Elige talla desde la guía
-        U->>FE: Selecciona la talla recomendada
-        FE-->>U: Cierra el modal y marca la talla en la ficha
+        U->>FE: seleccionarTalla(talla)
+        FE->>FE: cerrarModal()
+        FE-->>U: marcarTallaEnFicha(talla)
     end
     opt Cierra la guía
-        U->>FE: Cierra la ventana modal
-        FE-->>U: Vuelve a la ficha del producto
+        U->>FE: cerrarGuia()
+        FE->>FE: cerrarModal()
+        FE-->>U: mostrarFicha(producto)
     end

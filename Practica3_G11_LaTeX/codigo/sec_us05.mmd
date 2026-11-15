@@ -5,28 +5,30 @@ sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
     participant DB as Base de datos
-    U->>FE: Accede al panel de administración
-    FE->>BE: POST /api/auth/login (email, password)
+    U->>FE: accederPanel(email, password)
+    FE->>BE: login(email, password) : POST /api/auth/login
     BE->>DB: findUsuarioByEmail(email)
     DB-->>BE: Usuario (passwordHash, rol)
     BE->>BE: Usuario.iniciarSesion(email, password)
     alt Rol ADMIN
-        BE-->>FE: 200 OK (tokenSesion)
-        FE->>BE: GET /api/admin/pedidos
-        BE->>DB: Administradora.listarPedidosPagados()
-        DB-->>BE: List~Pedido~
-        BE-->>FE: 200 OK (List~Pedido~)
-        FE-->>U: Muestra tabla con datos de entrega y estado
+        BE-->>FE: 200 OK : tokenSesion
+        FE->>BE: listarPedidos() : GET /api/admin/pedidos
+        BE->>BE: Administradora.listarPedidosPagados()
+        BE->>DB: findPedidosPagados()
+        DB-->>BE: Pedido[]
+        BE-->>FE: 200 OK : Pedido[]
+        FE-->>U: mostrarTablaPedidos(pedidos)
         opt Marca un pedido como enviado
-            U->>FE: Pulsa Marcar como enviado
-            FE->>BE: PATCH /api/admin/pedidos/idPedido (estado ENVIADO)
+            U->>FE: marcarComoEnviado(idPedido)
+            FE->>BE: actualizarEstado(idPedido, ENVIADO) : PATCH /api/admin/pedidos/idPedido
             BE->>BE: Administradora.marcarPedidoEnviado(idPedido)
-            BE->>DB: Pedido.cambiarEstado(ENVIADO)
+            BE->>BE: Pedido.cambiarEstado(ENVIADO)
+            BE->>DB: updatePedido(pedido)
             DB-->>BE: OK
-            BE-->>FE: 200 OK (Pedido actualizado)
-            FE-->>U: Refresca la tabla con el nuevo estado
+            BE-->>FE: 200 OK : Pedido
+            FE-->>U: refrescarTabla(pedido)
         end
     else Sin permisos
         BE-->>FE: 403 Forbidden
-        FE-->>U: Deniega el acceso al panel
+        FE-->>U: mostrarAccesoDenegado()
     end
