@@ -1,11 +1,19 @@
-\textcolor{red}{\textbf{PENDIENTE DE COMPLETAR (borrar este bloque rojo al terminar).}}
-
-Describid aquí los errores \textbf{reales} de la primera respuesta de la IA para el diagrama de casos de uso general y cómo los corrigió el equipo. Puntos que hay que comprobar:
+    \textcolor{red}{\textbf{La primera respuesta generada por la IA, precedida de un texto explicativo, \textbf{no renderizó}: mermaid.live devolvió el error \emph{Error parsing usecase diagram} al encontrar una llave de apertura en la línea 10, columna 38. La herencia entre actores (Cliente registrada hacia Visitante) y la cobertura de las diez historias eran correctas, pero tras analizar el código se detectaron y corrigieron los siguientes errores:
 \begin{itemize}[leftmargin=*,nosep]
-\item Cabecera usecase-beta y 'direction'.
-\item Relaciones dentro de un systemBoundary (solo se permiten declaraciones de actor y caso de uso).
-\item Actores usados sin declarar con 'actor' (se interpretan como casos de uso).
-\item Sintaxis incorrecta de include/extend (debe ser 'A ..> : include B').
-\item Casos de uso o historias del Backlog omitidos (US-1 a US-10).
-\item Etiquetas con paréntesis, comillas o '--' que rompen el parser.
+\item \textbf{Error de sintaxis bloqueante en los límites del sistema:} La IA abrió cada \texttt{systemBoundary} con llaves, como si fuera un lenguaje de bloques de código, algo que el ejemplo de mermaid.live no hacía y que el analizador rechaza. Se reescribió cada paquete con un identificador y un título, y se cerró con la palabra \texttt{end}.
+\item \textbf{Sintaxis y semántica erróneas en las relaciones «include» y «extend»:} La IA escribió el estereotipo entre dobles ángulos como etiqueta libre, y no con la forma que admite la gramática (\texttt{A ..> : include B}). Además asignó mal el tipo: «Filtrado por categoría y tallas» (US-6) aparecía como «include» de «Visualización del catálogo» cuando es una funcionalidad opcional, es decir, un «extend», y lo mismo ocurría con «Aplicación de cupones» (US-9) respecto a «Cesta de la compra». Se corrigieron ambas a «extend», con la flecha dirigida desde el caso opcional hacia el caso base.
+\item \textbf{Relaciones incorrectas con los actores secundarios:} La IA dibujó asociaciones desde el caso de uso hacia la pasarela de pago (\texttt{US4 --> PaymentGateway}) y una relación «include» desde un caso de uso hacia el actor Servicio de correo. UML solo permite «include» entre casos de uso, y las asociaciones parten del actor. Se declararon la pasarela y el servicio de correo como actores secundarios, se asociaron desde el actor al caso de uso, y se modeló «Enviar email de pedido» como caso de uso incluido por «Confirmar pedido».
+\item \textbf{Granularidad insuficiente:} La respuesta usaba un único caso de uso por historia, con el título literal de la historia como nombre (por ejemplo, «US-1 (Sprint 1): Visualización del Catálogo Principal»), por lo que no aparecía ninguna relación real entre casos de uso del sistema. Se sustituyó por casos de uso con nombre de acción y el sprint como sufijo, y se añadieron los casos «Confirmar pedido», «Enviar email de pedido» y «Marcar pedido como enviado», con las relaciones entre ellos.
+\item \textbf{Actor incorrecto en el registro de usuarios:} La IA asoció «Registro e inicio de sesión» (US-8) únicamente a «Cliente registrada», que por definición ya está registrada. Se asoció al actor \texttt{Visitante} (que hereda la cliente registrada) y se dejó «Consultar historial de pedidos» para la cliente registrada, según el criterio de aceptación de US-8. También se sustituyeron los identificadores en inglés (\texttt{Visitor}, \texttt{RegisteredClient}, \texttt{PaymentGateway}, \texttt{MailService}) por los del glosario común del proyecto.
 \end{itemize}
+\paragraph{Hallazgo sobre la sintaxis \texttt{usecase-beta}.} El enunciado indica que esta sintaxis carece de soporte estable para los estereotipos «include» y «extend» en las aristas. En la versión de mermaid.live utilizada, sin embargo, el diagrama corregido con relaciones \texttt{include} y \texttt{extend} y con paquetes \texttt{systemBoundary} se renderizó sin errores (figura siguiente), de modo que la limitación descrita no se reprodujo. Los casos de uso por historia se mantienen en \texttt{flowchart LR}, tal como exige la práctica.}}
+
+    Describid aquí los errores \textbf{reales} de la primera respuesta de la IA para el diagrama de casos de uso general y cómo los corrigió el equipo. Puntos que hay que comprobar:
+    \begin{itemize}[leftmargin=*,nosep]
+    \item Cabecera usecase-beta y 'direction'.
+    \item Relaciones dentro de un systemBoundary (solo se permiten declaraciones de actor y caso de uso).
+    \item Actores usados sin declarar con 'actor' (se interpretan como casos de uso).
+    \item Sintaxis incorrecta de include/extend (debe ser 'A ..> : include B').
+    \item Casos de uso o historias del Backlog omitidos (US-1 a US-10).
+    \item Etiquetas con paréntesis, comillas o '--' que rompen el parser.
+    \end{itemize}

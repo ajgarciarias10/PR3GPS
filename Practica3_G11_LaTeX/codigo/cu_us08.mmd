@@ -1,5 +1,7 @@
 flowchart LR
-    subgraph SB8 ["Cuenta de cliente"]
+    Cliente("fa:fa-user<br>Cliente")
+
+    subgraph SB8 ["Atelier Jaén - Cuenta de cliente"]
         RegistrarAcceder([Registrarse e iniciar sesión])
         ValidarPassword([Validar contraseña segura])
         CrearCuenta([Crear cuenta de cliente])
@@ -7,11 +9,14 @@ flowchart LR
         GuardarDirecciones([Guardar direcciones de envío])
         ConsultarHistorial([Consultar historial de pedidos])
     end
-    Cliente("fa:fa-user<br>Cliente") --- RegistrarAcceder
+
+    Cliente --- RegistrarAcceder
+
     RegistrarAcceder -->|«include»| ValidarPassword
     RegistrarAcceder -->|«include»| CrearCuenta
     RecordarSesion -.->|«extend»| RegistrarAcceder
     GuardarDirecciones -.->|«extend»| RegistrarAcceder
     ConsultarHistorial -.->|«extend»| RegistrarAcceder
+
     classDef actor fill:none,stroke:none;
     class Cliente actor;

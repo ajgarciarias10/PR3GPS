@@ -1,0 +1,14 @@
+flowchart LR
+    subgraph ECommerce ["E-commerce Boutique Moda"]
+        US7([Pagar con Bizum])
+        Pasarela([Redirección a pasarela oficial de Bizum])
+        AppBanco([Autorización en la app del banco])
+
+        US7 -->|«include»| Pasarela
+        US7 -.->|«extend»| AppBanco
+    end
+
+    Cliente("fa:fa-user<br>Clienta Habitual") --- US7
+
+    classDef actor fill:none,stroke:none;
+    class Cliente actor;

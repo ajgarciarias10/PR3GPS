@@ -1,0 +1,18 @@
+flowchart LR
+    Cliente("fa:fa-user<br>Cliente")
+    
+    subgraph CestaCompra ["Módulo Cesta de la Compra"]
+        GestionarCesta([Gestionar Cesta])
+        ModificarCantidades([Modificar Cantidades de Artículos])
+        EliminarArticulos([Eliminar Artículos del Carrito])
+        VisualizarDesglose([Visualizar Desglose de Costes y Envíos])
+        
+        GestionarCesta -->|«include»| ModificarCantidades
+        GestionarCesta -->|«include»| EliminarArticulos
+        GestionarCesta -->|«include»| VisualizarDesglose
+    end
+    
+    Cliente --- GestionarCesta
+
+    classDef actor fill:none,stroke:none;
+    class Cliente actor;

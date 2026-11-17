@@ -1,13 +1,18 @@
 flowchart LR
-    subgraph SB10 ["Guía de tallas"]
+    Cliente("fa:fa-user<br>Cliente")
+
+    subgraph SB10 ["Atelier Jaén - Guía de tallas"]
         ConsultarGuia([Consultar guía interactiva de tallas])
-        AbrirModal([Abrir ventana modal])
-        MostrarMedidas([Mostrar medidas de pecho, cintura y cadera])
+        AbrirModal([Abrir ventana modal en la ficha del producto])
+        MostrarMedidas([Mostrar medidas de pecho, cintura y cadera por talla])
         SeleccionarTalla([Seleccionar talla recomendada])
     end
-    Cliente("fa:fa-user<br>Cliente") --- ConsultarGuia
+
+    Cliente --- ConsultarGuia
+
     ConsultarGuia -->|«include»| AbrirModal
     ConsultarGuia -->|«include»| MostrarMedidas
     SeleccionarTalla -.->|«extend»| ConsultarGuia
+
     classDef actor fill:none,stroke:none;
     class Cliente actor;

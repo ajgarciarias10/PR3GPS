@@ -4,7 +4,18 @@ Requisitos:
 - Agrupa los casos de uso en cuatro paquetes (systemBoundary): Catálogo y producto, Compra y pago, Cuenta de cliente, Administración PYME.
 - Cubre TODAS las historias de usuario de los Sprints 1, 2 y 3 (indica el sprint en el nombre de cada caso de uso).
 - Incluye relaciones include y extend entre casos de uso cuando proceda.
-Código de ejemplo de mermaid.live: [PEGAR AQUÍ EL EJEMPLO usecase-beta DE MERMAID.LIVE]
+Código de ejemplo de mermaid.live: 
+usecase-beta
+actor User("User")
+actor Admin("Administrator")
+Login("Log in")
+ViewProfile("View profile")
+ManageUsers("Manage users")
+ViewReports("View reports")
+User --> Login
+User --> ViewProfile
+Admin --> ManageUsers
+Admin --> ViewReports
 Product Backlog completo:
 US-1 (Sprint 1) Visualización del Catálogo Principal: Como cliente, quiero ver el catálogo general de prendas y accesorios para conocer los productos disponibles de la tienda. Criterios: Cada producto debe mostrar imagen, nombre, precio con IVA y distintivo de disponibilidad en stock.
 US-2 (Sprint 1) Ficha de Detalle de Producto: Como cliente, quiero acceder al detalle del artículo y seleccionar mi talla para comprobar sus características y elegir la prenda adecuada. Criterios: Debe existir un selector interactivo de talla (S, M, L, etc.) que deshabilite las opciones agotadas y permita añadir el producto al carrito.

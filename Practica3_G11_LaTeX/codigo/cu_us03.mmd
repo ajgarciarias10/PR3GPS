@@ -1,15 +1,21 @@
 flowchart LR
-    subgraph SB3 ["Cesta de la compra"]
+    Cliente("fa:fa-user<br>Cliente")
+
+    subgraph SB3 ["Atelier Jaén - Cesta de la compra"]
         GestionarCesta([Gestionar cesta de la compra])
-        CalcularDesglose([Calcular desglose de costes y envío])
-        ActualizarTotales([Actualizar totales en tiempo real])
+        MostrarDesglose([Mostrar desglose de costes y envío])
         ModificarCantidad([Modificar cantidad de un artículo])
         EliminarArticulo([Eliminar artículo de la cesta])
+        ActualizarTotales([Actualizar totales en tiempo real])
     end
-    Cliente("fa:fa-user<br>Cliente") --- GestionarCesta
-    GestionarCesta -->|«include»| CalcularDesglose
-    GestionarCesta -->|«include»| ActualizarTotales
+
+    Cliente --- GestionarCesta
+
+    GestionarCesta -->|«include»| MostrarDesglose
     ModificarCantidad -.->|«extend»| GestionarCesta
     EliminarArticulo -.->|«extend»| GestionarCesta
+    ModificarCantidad -->|«include»| ActualizarTotales
+    EliminarArticulo -->|«include»| ActualizarTotales
+
     classDef actor fill:none,stroke:none;
     class Cliente actor;

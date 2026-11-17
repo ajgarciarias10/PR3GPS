@@ -1,5 +1,7 @@
 flowchart LR
-    subgraph SB4 ["Checkout con tarjeta"]
+    Cliente("fa:fa-user<br>Cliente")
+
+    subgraph SB4 ["Atelier Jaén - Checkout con tarjeta"]
         PagarTarjeta([Pagar pedido con tarjeta])
         ValidarTarjeta([Validar datos de la tarjeta])
         Autenticar3DS([Autenticar con 3D Secure])
@@ -8,12 +10,15 @@ flowchart LR
         EnviarEmail([Enviar email con número de pedido])
         ErrorPago([Mostrar error de pago conservando la cesta])
     end
-    Cliente("fa:fa-user<br>Cliente") --- PagarTarjeta
+
+    Cliente --- PagarTarjeta
+
     PagarTarjeta -->|«include»| ValidarTarjeta
     PagarTarjeta -->|«include»| Autenticar3DS
     PagarTarjeta -->|«include»| RegistrarPedido
     PagarTarjeta -->|«include»| ConfirmarPantalla
     PagarTarjeta -->|«include»| EnviarEmail
     ErrorPago -.->|«extend»| PagarTarjeta
+
     classDef actor fill:none,stroke:none;
     class Cliente actor;

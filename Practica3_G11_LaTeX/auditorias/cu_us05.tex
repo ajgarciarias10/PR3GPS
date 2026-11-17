@@ -1,4 +1,10 @@
-\textcolor{red}{\textbf{PENDIENTE DE COMPLETAR (borrar este bloque rojo al terminar).}}
+\textcolor{red}{\textbf{La primera respuesta generada por la IA produjo un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live y respetaba las reglas de la plantilla: una única asociación actor--caso de uso, relaciones «include» con la dirección correcta, estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para el actor. No obstante, tras auditar el código frente a la semántica UML, a los criterios de aceptación de US-5 y al glosario común del proyecto, se aplicaron las siguientes correcciones y mejoras:
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{Uso incorrecto de «include» para una acción opcional:} La IA modeló «Marcar pedido como completado» como relación «include» de «Gestionar pedidos pagados». La administradora puede consultar los pedidos sin marcar ninguno, por lo que no es una secuencia obligatoria. Se convirtió en una relación «extend» discontinua dirigida desde el caso opcional hacia el caso base.
+\item \textbf{Estado incoherente con el glosario común:} La respuesta usaba «Completado», pero los estados del pedido definidos en el proyecto son \texttt{PENDIENTE} y \texttt{ENVIADO}. Se renombró el caso a «Marcar pedido como enviado».
+\item \textbf{Criterios de aceptación sin reflejar:} El criterio habla de una tabla \emph{privada} con la lista de pedidos y su estado, pero la IA no modelaba el acceso restringido ni el listado. Se añadieron los casos incluidos «Autenticar administradora», «Listar pedidos pagados» y «Mostrar datos de entrega y estado» (este último sustituye a «Consultar Datos de Entrega» e incorpora el estado).
+\item \textbf{Identificadores y título poco descriptivos:} Los identificadores \texttt{UC1}, \texttt{UC2} y \texttt{UC3} no indican su función, el actor se abreviaba como \texttt{Adm} y el límite se titulaba simplemente «Sistema». Se usaron identificadores descriptivos, el actor pasó a llamarse \texttt{Administradora} y el límite a «Atelier Jaén - Panel de administración».
+\end{itemize}}}
 
 Describid aquí los errores \textbf{reales} de la primera respuesta de la IA para el caso de uso de US-5 y cómo los corrigió el equipo. Puntos que hay que comprobar:
 \begin{itemize}[leftmargin=*,nosep]

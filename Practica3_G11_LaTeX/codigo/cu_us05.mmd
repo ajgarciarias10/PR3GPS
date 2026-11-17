@@ -1,15 +1,20 @@
 flowchart LR
-    subgraph SB5 ["Panel de administración"]
+    Administradora("fa:fa-user<br>Administradora")
+
+    subgraph SB5 ["Atelier Jaén - Panel de administración"]
         GestionarPedidos([Gestionar pedidos entrantes])
         AutenticarAdmin([Autenticar administradora])
         ListarPedidos([Listar pedidos pagados])
         MostrarEntrega([Mostrar datos de entrega y estado])
         MarcarEnviado([Marcar pedido como enviado])
     end
-    Administradora("fa:fa-user<br>Administradora") --- GestionarPedidos
+
+    Administradora --- GestionarPedidos
+
     GestionarPedidos -->|«include»| AutenticarAdmin
     GestionarPedidos -->|«include»| ListarPedidos
     GestionarPedidos -->|«include»| MostrarEntrega
     MarcarEnviado -.->|«extend»| GestionarPedidos
+
     classDef actor fill:none,stroke:none;
     class Administradora actor;

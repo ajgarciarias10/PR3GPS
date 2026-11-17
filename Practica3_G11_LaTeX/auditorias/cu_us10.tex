@@ -1,4 +1,10 @@
-\textcolor{red}{\textbf{PENDIENTE DE COMPLETAR (borrar este bloque rojo al terminar).}}
+\textcolor{red}{\textbf{La primera respuesta generada por la IA produjo, precedido de un texto explicativo, un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live. Respetaba las reglas de la plantilla: una única asociación actor--caso de uso, una relación «extend» con la dirección correcta (del caso opcional al caso base), estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para el actor. El diagrama era correcto pero muy escueto, por lo que la auditoría se centró en el detalle exigido por los criterios de aceptación:
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{Caso base ajeno al objetivo de la historia:} La IA asoció el actor a «Consultar Ficha de Producto», caso de uso que pertenece a US-2 (Sprint 1), y dejó la guía de tallas como mera extensión. Se tomó como caso base el objetivo de US-10, «Consultar guía interactiva de tallas», para que el diagrama describa únicamente el alcance de esta historia.
+\item \textbf{Criterios de aceptación sin reflejar:} El criterio exige una ventana modal en la ficha del producto con las medidas de contorno de pecho, cintura y cadera de cada talla, pero el diagrama no modelaba ni la ventana ni las medidas. Se añadieron los casos incluidos «Abrir ventana modal en la ficha del producto» y «Mostrar medidas de pecho, cintura y cadera por talla» (la guía depende de la entidad \texttt{MEDIDA\_TALLA}).
+\item \textbf{Flujo opcional de uso de la guía sin modelar:} Tras consultar las medidas, la clienta puede elegir su talla desde la guía. Se añadió «Seleccionar talla recomendada» como relación «extend» hacia el caso base, coherente con el flujo opcional del diagrama de secuencia de US-10.
+\item \textbf{Identificadores y límite genéricos:} El límite «E-commerce Boutique de Moda» no identificaba el módulo y los nombres usaban mayúsculas iniciales en cada palabra, distintas del resto del proyecto. Se unificó el estilo y el límite pasó a titularse «Atelier Jaén - Guía de tallas».
+\end{itemize}}}
 
 Describid aquí los errores \textbf{reales} de la primera respuesta de la IA para el caso de uso de US-10 y cómo los corrigió el equipo. Puntos que hay que comprobar:
 \begin{itemize}[leftmargin=*,nosep]

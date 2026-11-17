@@ -1,13 +1,20 @@
 flowchart LR
-    subgraph SB1 ["Catálogo de la tienda"]
+    Cliente("fa:fa-user<br>Cliente")
+
+    subgraph SB1 ["Atelier Jaén - Catálogo de la tienda"]
         VerCatalogo([Ver catálogo principal])
         MostrarDatos([Mostrar imagen, nombre y precio con IVA])
         MostrarStock([Mostrar distintivo de disponibilidad])
+        CatalogoVacio([Mostrar mensaje de catálogo vacío])
         AvisoAgotado([Mostrar aviso de producto agotado])
     end
-    Cliente("fa:fa-user<br>Cliente") --- VerCatalogo
+
+    Cliente --- VerCatalogo
+
     VerCatalogo -->|«include»| MostrarDatos
     VerCatalogo -->|«include»| MostrarStock
-    AvisoAgotado -.->|«extend»| VerCatalogo
+    CatalogoVacio -.->|«extend»| VerCatalogo
+    AvisoAgotado -.->|«extend»| MostrarStock
+
     classDef actor fill:none,stroke:none;
     class Cliente actor;

@@ -1,15 +1,22 @@
 flowchart LR
-    subgraph SB7 ["Checkout con Bizum"]
+    Cliente("fa:fa-user<br>Cliente")
+
+    subgraph SB7 ["Atelier Jaén - Checkout con Bizum"]
         PagarBizum([Pagar pedido con Bizum])
+        RedirigirPasarela([Redirigir a la pasarela oficial de Bizum])
         SolicitarTelefono([Solicitar teléfono Bizum])
-        AutorizarBanco([Autorizar en la app del banco])
+        AutorizarBanco([Autorizar pago en la app del banco])
         ConfirmarPedido([Confirmar pedido])
-        ErrorBizum([Gestionar autorización denegada o expirada])
+        ErrorBizum([Mostrar error de autorización denegada o expirada])
     end
-    Cliente("fa:fa-user<br>Cliente") --- PagarBizum
+
+    Cliente --- PagarBizum
+
+    PagarBizum -->|«include»| RedirigirPasarela
     PagarBizum -->|«include»| SolicitarTelefono
     PagarBizum -->|«include»| AutorizarBanco
     PagarBizum -->|«include»| ConfirmarPedido
     ErrorBizum -.->|«extend»| PagarBizum
+
     classDef actor fill:none,stroke:none;
     class Cliente actor;

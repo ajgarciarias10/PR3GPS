@@ -1,4 +1,9 @@
-\textcolor{red}{\textbf{PENDIENTE DE COMPLETAR (borrar este bloque rojo al terminar).}}
+\textcolor{red}{\textbf{La primera respuesta generada por la IA produjo un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live y respetaba las reglas de la plantilla: una única asociación actor--caso de uso, estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para el actor. No obstante, tras auditar el código frente a la semántica UML y a los criterios de aceptación de US-3, se aplicaron las siguientes correcciones y mejoras:
+\begin{itemize}[leftmargin=*,nosep]
+\item \textbf{Uso incorrecto de «include» para acciones opcionales:} La IA modeló «Modificar cantidades» y «Eliminar artículos» como relaciones «include» de «Gestionar cesta». Una relación «include» representa una secuencia \emph{obligatoria}, pero el cliente puede abrir la cesta sin modificar ni eliminar nada. Se convirtieron en relaciones «extend» discontinuas, con la flecha dirigida desde el caso opcional hacia el caso base. Solo «Mostrar desglose de costes y envío» se mantiene como «include», porque se muestra siempre.
+\item \textbf{Criterio «en tiempo real» sin reflejar:} El criterio exige ver el desglose de costes y envío actualizado al instante, pero la respuesta no modelaba ese recálculo. Se añadió el caso «Actualizar totales en tiempo real», incluido de forma obligatoria tanto por «Modificar cantidad de un artículo» como por «Eliminar artículo de la cesta» (coherente con el recálculo de totales del diagrama de secuencia de US-3).
+\item \textbf{Nombres e identificadores inconsistentes:} La respuesta usaba mayúsculas iniciales en cada palabra, plurales y un título genérico («Módulo Cesta de la Compra»), distintos del estilo del resto del proyecto. Se unificaron los nombres («Mostrar desglose de costes y envío») y el límite pasó a titularse «Atelier Jaén - Cesta de la compra».
+\end{itemize}}}
 
 Describid aquí los errores \textbf{reales} de la primera respuesta de la IA para el caso de uso de US-3 y cómo los corrigió el equipo. Puntos que hay que comprobar:
 \begin{itemize}[leftmargin=*,nosep]
