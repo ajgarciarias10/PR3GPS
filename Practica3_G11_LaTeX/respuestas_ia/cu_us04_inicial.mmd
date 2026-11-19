@@ -1,0 +1,16 @@
+flowchart LR
+    subgraph CheckoutSystem ["Módulo de Checkout y Pagos"]
+        CPago([Pagar Pedido con Tarjeta])
+        CSecure([Verificar 3D Secure])
+        CConf([Mostrar Confirmación en Pantalla])
+        CEmail([Enviar Email con Número de Pedido])
+
+        CPago -->|«include»| CSecure
+        CPago -->|«include»| CConf
+        CPago -->|«include»| CEmail
+    end
+
+    Cliente("fa:fa-user<br>Cliente") --- CPago
+
+    classDef actor fill:none,stroke:none;
+    class Cliente actor;

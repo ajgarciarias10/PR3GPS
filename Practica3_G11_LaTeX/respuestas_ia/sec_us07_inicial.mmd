@@ -1,0 +1,51 @@
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+    participant GW as Pasarela Bizum
+    participant BK as App Banco
+
+    U->>FE: Selecciona pago con Bizum y confirma pedido
+    FE->>BE: POST /api/orders/checkout/bizum
+    BE->>DB: INSERT INTO pedidos y pagos (estado PENDIENTE)
+    DB-->>BE: Pedido y pago creados
+    BE->>GW: POST /api/v1/bizum/init (importe, referencia)
+    GW-->>BE: 200 OK (url_redireccion, id_transaccion)
+    BE-->>FE: 201 Created (url_redireccion, id_pedido)
+    FE-->>U: Redirige a la pasarela oficial de Bizum
+
+    U->>GW: Introduce numero de telefono y envia
+    GW->>BK: Solicita autorizacion de pago push
+
+    alt Telefono no registrado en Bizum o invalido
+        BK-->>GW: Error usuario no activo en Bizum
+        GW-->>FE: Redireccion con error de validacion
+        FE-->>U: Muestra mensaje de telefono no valido para Bizum
+    else Telefono valido y registrado
+        BK->>U: Notificacion push para autorizar pago en la app
+        alt Cliente autoriza el pago en la app del banco
+            U->>BK: Confirma operacion con clave o biometria
+            BK-->>GW: Pago autorizado
+            GW->>BE: POST /api/webhooks/bizum (id_transaccion, estado AUTORIZADO)
+            BE->>DB: UPDATE pedidos SET estado = PAGADO, pagos SET estado = COMPLETADO
+            DB-->>BE: Confirmacion de actualizacion
+            BE-->>GW: 200 OK Webhook recibido
+            GW-->>FE: Redirige a URL de exito del comercio
+            FE->>BE: GET /api/orders/{id_pedido}/status
+            BE->>DB: SELECT estado FROM pedidos WHERE id = id_pedido
+            DB-->>BE: Estado PAGADO
+            BE-->>FE: 200 OK (detalles del pedido pagado)
+            FE-->>U: Muestra pantalla de confirmacion de compra
+        else Cliente rechaza el pago o expira el tiempo de autorizacion
+            U->>BK: Rechaza operacion o no responde a tiempo
+            BK-->>GW: Pago denegado o expirado
+            GW->>BE: POST /api/webhooks/bizum (id_transaccion, estado FALLIDO)
+            BE->>DB: UPDATE pedidos SET estado = PAGO_FALLIDO, pagos SET estado = CANCELADO
+            DB-->>BE: Confirmacion de actualizacion
+            BE-->>GW: 200 OK Webhook recibido
+            GW-->>FE: Redirige a URL de fallo del comercio
+            FE-->>U: Muestra mensaje de pago cancelado y permite reintentar
+        end
+    end

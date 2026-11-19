@@ -1,0 +1,13 @@
+flowchart LR
+    Cliente("fa:fa-user<br>Cliente")
+
+    subgraph ECommerce ["E-commerce Boutique de Moda"]
+        ConsultarFicha([Consultar Ficha de Producto])
+        ConsultarGuia([Consultar Guía Interactiva de Tallas])
+    end
+
+    Cliente --- ConsultarFicha
+    ConsultarGuia -.->|«extend»| ConsultarFicha
+
+    classDef actor fill:none,stroke:none;
+    class Cliente actor;

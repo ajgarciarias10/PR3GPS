@@ -1,0 +1,14 @@
+flowchart LR
+    subgraph ModuloCarrito ["Módulo de Carrito y Promociones"]
+        UC1([Aplicar Código Promocional])
+        UC2([Validar Cupón en Base de Datos])
+        UC3([Actualizar Importe Total])
+
+        UC1 -->|«include»| UC2
+        UC1 -->|«include»| UC3
+    end
+
+    Cliente("fa:fa-user<br>Cliente") --- UC1
+
+    classDef actor fill:none,stroke:none;
+    class Cliente actor;

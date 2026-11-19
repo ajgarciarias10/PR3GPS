@@ -1,0 +1,13 @@
+flowchart LR
+    subgraph SB9 ["Promociones"]
+        AplicarCupon([Aplicar cupón de descuento])
+        ValidarCupon([Validar cupón contra la base de datos])
+        RecalcularTotal([Recalcular total con descuento])
+        CuponInvalido([Mostrar error de cupón inválido o caducado])
+    end
+    Cliente("fa:fa-user<br>Cliente") --- AplicarCupon
+    AplicarCupon -->|«include»| ValidarCupon
+    AplicarCupon -->|«include»| RecalcularTotal
+    CuponInvalido -.->|«extend»| AplicarCupon
+    classDef actor fill:none,stroke:none;
+    class Cliente actor;

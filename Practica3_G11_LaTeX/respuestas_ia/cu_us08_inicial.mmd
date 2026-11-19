@@ -1,0 +1,20 @@
+flowchart LR
+    subgraph SistemaECommerce ["E-commerce Boutique de Moda - Módulo de Usuarios"]
+        Registrar([Registrarse])
+        ValidarPass([Validar Contraseña Segura])
+        GuardarDir([Guardar Direcciones])
+        IniciarSesion([Iniciar Sesión])
+        ConsultarHistorial([Consultar Historial de Compras])
+        RecordarSesion([Recordar Sesión])
+
+        Registrar -->|«include»| ValidarPass
+        Registrar -->|«include»| GuardarDir
+        IniciarSesion -.->|«extend»| Registrar
+        ConsultarHistorial -.->|«extend»| IniciarSesion
+        RecordarSesion -.->|«extend»| IniciarSesion
+    end
+
+    Clienta("fa:fa-user<br>Clienta Frecuente") --- Registrar
+
+    classDef actor fill:none,stroke:none;
+    class Clienta actor;

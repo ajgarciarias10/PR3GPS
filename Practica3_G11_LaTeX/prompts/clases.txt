@@ -1,0 +1,175 @@
+Actúa como un Arquitecto de Software experto en UML. A partir de la memoria de la Práctica 1 de Atelier Jaén y del Diagrama ER ya validado (que te adjunto), genera en Mermaid un Diagrama de Clases UML ('classDiagram') completo. Reglas:
+1. Clases con atributos y métodos, con visibilidad (+, -) y tipos.
+2. Debe haber asociación, agregación, composición y herencia (Usuario con Cliente y Administradora; Pago con PagoTarjeta y PagoBizum).
+3. Incluye multiplicidades en las relaciones y enumeraciones/interfaces donde proceda (EstadoPedido, PasarelaPago, ServicioCorreo).
+4. Los nombres de clases y atributos deben ser coherentes con las entidades del ER.
+5. Cubre las 10 historias de usuario (los métodos deben permitir implementar cada una).
+6. Devuelve únicamente el bloque de código Mermaid, sin explicaciones.
+Diagrama ER validado: 
+erDiagram
+    USUARIO {
+        int id_usuario PK
+        string email UK
+        string password_hash
+        string nombre
+        string apellidos
+        string telefono
+        string rol "cliente | administradora"
+        string token_sesion "recordar sesion"
+        boolean activo
+        timestamp fecha_registro
+    }
+    DIRECCION {
+        int id_direccion PK
+        int id_usuario FK
+        string alias
+        string nombre_destinatario
+        string telefono
+        string calle
+        string codigo_postal
+        string ciudad
+        string provincia
+        string pais
+        boolean es_predeterminada
+    }
+    CATEGORIA {
+        int id_categoria PK
+        string nombre UK
+        string slug UK
+        string descripcion
+        boolean activa
+    }
+    PRODUCTO {
+        int id_producto PK
+        int id_categoria FK
+        string sku UK
+        string nombre
+        string slug UK
+        text descripcion
+        decimal precio_base
+        decimal porcentaje_iva
+        decimal precio_con_iva
+        string imagen_url
+        boolean activo
+        timestamp fecha_creacion
+    }
+    TALLA {
+        int id_talla PK
+        string codigo UK "XS | S | M | L | XL"
+        int orden
+    }
+    PRODUCTO_TALLA {
+        int id_producto_talla PK
+        int id_producto FK
+        int id_talla FK
+        string sku_variante UK
+        int stock_disponible
+        int stock_reservado
+    }
+    GUIA_TALLA {
+        int id_guia_talla PK
+        int id_talla FK
+        int id_categoria FK "nullable"
+        decimal pecho_cm
+        decimal cintura_cm
+        decimal cadera_cm
+    }
+    CUPON {
+        int id_cupon PK
+        string codigo UK
+        string tipo_descuento "porcentaje | fijo"
+        decimal valor_descuento
+        decimal importe_minimo
+        timestamp fecha_inicio
+        timestamp fecha_fin
+        int usos_maximos
+        int usos_actuales
+        boolean activo
+    }
+    CARRITO {
+        int id_carrito PK
+        int id_usuario FK "nullable"
+        int id_cupon FK "nullable"
+        string token_sesion UK
+        decimal gastos_envio_estimados
+        timestamp fecha_actualizacion
+    }
+    LINEA_CARRITO {
+        int id_linea_carrito PK
+        int id_carrito FK
+        int id_producto_talla FK
+        int cantidad
+        decimal precio_unitario
+    }
+    PEDIDO {
+        int id_pedido PK
+        string numero_pedido UK
+        int id_usuario FK "nullable para invitado"
+        int id_direccion FK "nullable"
+        int id_cupon FK "nullable"
+        string email_cliente
+        string nombre_destinatario
+        string telefono_contacto
+        string direccion_entrega
+        string codigo_postal
+        string ciudad
+        string provincia
+        string estado_pedido "Pendiente | Enviado"
+        decimal subtotal
+        decimal gastos_envio
+        decimal descuento_aplicado
+        decimal total
+        timestamp fecha_pedido
+        timestamp fecha_envio
+    }
+    LINEA_PEDIDO {
+        int id_linea_pedido PK
+        int id_pedido FK
+        int id_producto_talla FK
+        string nombre_producto
+        string talla_producto
+        int cantidad
+        decimal precio_unitario_iva
+        decimal subtotal_linea
+    }
+    PAGO {
+        int id_pago PK
+        int id_pedido FK
+        string metodo_pago "Tarjeta | Bizum"
+        string estado_pago "Pendiente | Autorizado | Completado | Fallido | Reembolsado"
+        decimal importe
+        string referencia_pasarela UK
+        boolean soporte_3ds
+        string estado_3ds
+        string ultimos_digitos_tarjeta "nullable"
+        string telefono_bizum "nullable"
+        timestamp fecha_pago
+    }
+    USUARIO ||--o{ DIRECCION : "guarda"
+    USUARIO |o--o{ CARRITO : "mantiene"
+    USUARIO |o--o{ PEDIDO : "realiza"
+    DIRECCION |o--o{ PEDIDO : "recibe"
+    CATEGORIA ||--o{ PRODUCTO : "clasifica"
+    CATEGORIA |o--o{ GUIA_TALLA : "agrupa"
+    PRODUCTO ||--|{ PRODUCTO_TALLA : "dispone"
+    TALLA ||--o{ PRODUCTO_TALLA : "asigna"
+    TALLA ||--o{ GUIA_TALLA : "define"
+    CUPON |o--o{ CARRITO : "descuenta"
+    CUPON |o--o{ PEDIDO : "aplica"
+    CARRITO ||--o{ LINEA_CARRITO : "contiene"
+    LINEA_CARRITO }o--|| PRODUCTO_TALLA : "referencia"
+    PEDIDO ||--|{ LINEA_PEDIDO : "detalla"
+    LINEA_PEDIDO }o--|| PRODUCTO_TALLA : "referencia"
+    PEDIDO ||--o{ PAGO : "genera"
+
+Product Backlog completo:
+US-1 (Sprint 1) Visualización del Catálogo Principal: Como cliente, quiero ver el catálogo general de prendas y accesorios para conocer los productos disponibles de la tienda. Criterios: Cada producto debe mostrar imagen, nombre, precio con IVA y distintivo de disponibilidad en stock.
+US-2 (Sprint 1) Ficha de Detalle de Producto: Como cliente, quiero acceder al detalle del artículo y seleccionar mi talla para comprobar sus características y elegir la prenda adecuada. Criterios: Debe existir un selector interactivo de talla (S, M, L, etc.) que deshabilite las opciones agotadas y permita añadir el producto al carrito.
+US-3 (Sprint 1) Cesta de la Compra: Como cliente, quiero gestionar los artículos añadidos al carrito para revisar mi pedido antes de tramitarlo. Criterios: El usuario puede modificar cantidades, eliminar artículos y visualizar en tiempo real el desglose de costes y gastos de envío.
+US-4 (Sprint 1) Procesamiento de Pago con Tarjeta (Checkout): Como cliente, quiero pagar mi pedido mediante tarjeta de débito o crédito para formalizar la compra de manera inmediata. Criterios: Integración con pasarela bancaria segura con soporte 3D Secure. Confirmación en pantalla y envío de email con número de pedido.
+US-5 (Sprint 1) Panel Básico de Gestión de Pedidos (PYME): Como administradora de la boutique, quiero ver los pedidos entrantes pagados para preparar y gestionar el empaquetado de envíos. Criterios: Tabla privada con lista de pedidos, datos de entrega del cliente, estado (Pendiente/Enviado) y botón para marcar completado.
+US-6 (Sprint 2) Filtrado por Categoría y Tallas: Como clienta, quiero filtrar el catálogo por categorías (Vestidos, Blusas, Pantalones) y por mi talla para encontrar rápidamente lo que busco. Criterios: Filtro dinámico sin necesidad de recargar la página por completo; muestra contador de resultados coincidentes.
+US-7 (Sprint 2) Pago Rápido con Bizum: Como clienta habitual de compras móviles, quiero pagar mediante Bizum para finalizar mi compra sin teclear los números de la tarjeta. Criterios: Redirección a la pasarela oficial de Bizum solicitando el teléfono y autorización en la app del banco del comprador.
+US-8 (Sprint 2) Registro e Inicio de Sesión de Usuario: Como clienta frecuente, quiero registrarme con mi email para guardar mis direcciones y consultar el historial de compras pasadas. Criterios: Formulario con validación de contraseña segura, opción de recordar sesión y panel con listado de pedidos anteriores.
+US-9 (Sprint 3) Aplicación de Cupones de Descuento: Como cliente, quiero ingresar un código promocional en el carrito para obtener un descuento en mi compra. Criterios: Validación contra lista de cupones válidos en la base de datos y deducción visual inmediata del importe en el total.
+US-10 (Sprint 3) Guía Interactiva de Tallas: Como cliente indecisa, quiero consultar una tabla interactiva de medidas anatómicas en centímetros para acertar con mi talla. Criterios: Ventana modal en la ficha del producto con medidas de contorno de pecho, cintura y cadera por cada talla.

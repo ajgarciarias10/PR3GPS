@@ -1,0 +1,55 @@
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+
+    U->>FE: Completa formulario (email, contrasena, recordar sesion)
+    FE->>FE: Valida formato de email y contrasena segura
+
+    alt Contrasena debil o email invalido
+        FE-->>U: Muestra error de validacion en el formulario
+    else Datos con formato valido
+        alt Flujo de Registro de nueva cuenta
+            FE->>BE: POST /api/auth/register (email, password, rememberMe)
+            BE->>DB: SELECT id FROM usuarios WHERE email = ?
+            DB-->>BE: Resultado de consulta
+            alt Email ya registrado
+                BE-->>FE: HTTP 409 Conflict (El email ya existe)
+                FE-->>U: Muestra alerta de correo ya registrado
+            else Email disponible
+                BE->>BE: Encripta contrasena con hash y genera token JWT
+                BE->>DB: INSERT INTO usuarios (email, password_hash)
+                DB-->>BE: Usuario creado con exito
+                BE-->>FE: HTTP 201 Created (token JWT y perfil)
+            end
+        else Flujo de Inicio de Sesion
+            FE->>BE: POST /api/auth/login (email, password, rememberMe)
+            BE->>DB: SELECT id, password_hash FROM usuarios WHERE email = ?
+            DB-->>BE: Datos del usuario
+            alt Credenciales incorrectas
+                BE-->>FE: HTTP 401 Unauthorized (Credenciales invalidas)
+                FE-->>U: Muestra error de usuario o contrasena incorrectos
+            else Credenciales validas
+                BE->>BE: Verifica hash y genera token JWT
+                BE-->>FE: HTTP 200 OK (token JWT y perfil)
+            end
+        end
+
+        opt Opcion recordar sesion activada
+            FE->>FE: Guarda token persistente en almacenamiento local o cookie de larga duracion
+        end
+
+        FE->>BE: GET /api/users/me/orders (Authorization Bearer token)
+        BE->>DB: SELECT * FROM pedidos WHERE usuario_id = ? ORDER BY fecha DESC
+        DB-->>BE: Listado de pedidos anteriores
+        BE-->>FE: HTTP 200 OK (historial de compras)
+
+        FE->>BE: GET /api/users/me/addresses (Authorization Bearer token)
+        BE->>DB: SELECT * FROM direcciones WHERE usuario_id = ?
+        DB-->>BE: Listado de direcciones guardadas
+        BE-->>FE: HTTP 200 OK (direcciones del cliente)
+
+        FE-->>U: Renderiza panel de usuario con historial de pedidos y direcciones
+    end

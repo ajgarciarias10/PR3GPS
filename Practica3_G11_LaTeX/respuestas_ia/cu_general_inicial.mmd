@@ -1,0 +1,46 @@
+usecase-beta
+actor Visitor("Visitante / Cliente")
+actor RegisteredClient("Cliente registrada")
+actor Admin("Administradora")
+actor PaymentGateway("Pasarela de pago")
+actor MailService("Servicio de correo")
+
+RegisteredClient --|> Visitor
+
+systemBoundary "Catálogo y producto" {
+    US1("US-1 (Sprint 1): Visualización del Catálogo Principal")
+    US2("US-2 (Sprint 1): Ficha de Detalle de Producto")
+    US6("US-6 (Sprint 2): Filtrado por Categoría y Tallas")
+    US10("US-10 (Sprint 3): Guía Interactiva de Tallas")
+}
+
+systemBoundary "Compra y pago" {
+    US3("US-3 (Sprint 1): Cesta de la Compra")
+    US4("US-4 (Sprint 1): Procesamiento de Pago con Tarjeta")
+    US7("US-7 (Sprint 2): Pago Rápido con Bizum")
+    US9("US-9 (Sprint 3): Aplicación de Cupones de Descuento")
+}
+
+systemBoundary "Cuenta de cliente" {
+    US8("US-8 (Sprint 2): Registro e Inicio de Sesión de Usuario")
+}
+
+systemBoundary "Administración PYME" {
+    US5("US-5 (Sprint 1): Panel Básico de Gestión de Pedidos")
+}
+
+Visitor --> US1
+Visitor --> US2
+Visitor --> US3
+Visitor --> US4
+Visitor --> US7
+RegisteredClient --> US8
+Admin --> US5
+
+US6 ..> US1 : <<include>>
+US10 ..> US2 : <<extend>>
+US9 ..> US3 : <<include>>
+US4 --> PaymentGateway
+US7 --> PaymentGateway
+US4 ..> MailService : <<include>>
+US7 ..> MailService : <<include>>

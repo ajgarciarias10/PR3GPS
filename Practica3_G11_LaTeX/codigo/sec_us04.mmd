@@ -1,0 +1,32 @@
+%%{init: {'sequence': {'mirrorActors': false}}}%%
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+    participant PG as Pasarela de pago
+    participant CO as Servicio de correo
+    U->>FE: Rellena envío y datos de tarjeta y pulsa Pagar
+    FE->>FE: validarCamposTarjeta()
+    FE->>BE: POST /api/pedidos (contacto, direccionEnvio, datosTarjeta)
+    BE->>DB: StockTalla.reservar(cantidad) y savePedido(PENDIENTE)
+    DB-->>BE: Pedido (idPedido, numeroPedido)
+    BE->>PG: PasarelaPago.cobrar(PagoTarjeta)
+    PG-->>U: PagoTarjeta.autenticar3DS()
+    U->>PG: Confirma autenticación 3D Secure
+    alt Pago aprobado
+        PG-->>BE: true (referencia, estado APROBADO)
+        BE->>DB: savePago(APROBADO), descontarStock() y vaciarCarrito()
+        DB-->>BE: OK
+        BE->>CO: ServicioCorreo.enviarConfirmacion(Pedido)
+        CO-->>BE: OK
+        BE-->>FE: 200 OK (Pedido confirmado, numeroPedido)
+        FE-->>U: Muestra pantalla de confirmación
+    else Pago rechazado
+        PG-->>BE: false (estado RECHAZADO)
+        BE->>DB: savePago(RECHAZADO) y liberarReservaStock()
+        DB-->>BE: OK
+        BE-->>FE: 402 Payment Required
+        FE-->>U: Muestra error y conserva los datos de la cesta
+    end

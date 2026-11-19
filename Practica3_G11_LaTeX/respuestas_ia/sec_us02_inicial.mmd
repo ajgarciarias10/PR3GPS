@@ -1,0 +1,39 @@
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+
+    U->>FE: Selecciona un producto del catalogo
+    FE->>BE: GET /api/products/:id
+    BE->>DB: Consulta detalle del producto y stock por talla
+    alt Producto encontrado
+        DB-->>BE: Datos del producto y disponibilidad de tallas
+        BE-->>FE: 200 OK (Detalle del producto y stock)
+        FE-->>U: Muestra ficha de producto con selector de tallas (deshabilita tallas sin stock)
+        
+        U->>FE: Selecciona una talla disponible (S, M, L, etc.)
+        FE-->>U: Actualiza estado visual de talla seleccionada y habilita boton de anadir al carrito
+        
+        opt Cliente decide anadir la prenda al carrito
+            U->>FE: Pulsa boton Anadir al carrito
+            FE->>BE: POST /api/cart/items (productId, size, quantity)
+            BE->>DB: Verifica stock actual para la talla seleccionada
+            alt Stock disponible
+                DB-->>BE: Stock confirmado
+                BE->>DB: Inserta o actualiza item en el carrito
+                DB-->>BE: Confirmacion de registro
+                BE-->>FE: 201 Created (Carrito actualizado)
+                FE-->>U: Muestra confirmacion de producto anadido al carrito
+            else Stock agotado concurrentemente
+                DB-->>BE: Sin stock suficiente
+                BE-->>FE: 409 Conflict (Talla agotada)
+                FE-->>U: Muestra aviso de falta de stock y deshabilita la talla
+            end
+        end
+    else Producto no existe
+        DB-->>BE: Sin resultados
+        BE-->>FE: 404 Not Found (Producto no encontrado)
+        FE-->>U: Muestra vista de producto no disponible
+    end

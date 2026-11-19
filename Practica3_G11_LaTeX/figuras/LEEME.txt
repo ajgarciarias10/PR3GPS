@@ -1,0 +1,24 @@
+Exportad desde mermaid.live (Actions > PNG) con estos nombres exactos:
+clases.png
+cu_general.png
+cu_us01.png
+cu_us02.png
+cu_us03.png
+cu_us04.png
+cu_us05.png
+cu_us06.png
+cu_us07.png
+cu_us08.png
+cu_us09.png
+cu_us10.png
+er.png
+sec_us01.png
+sec_us02.png
+sec_us03.png
+sec_us04.png
+sec_us05.png
+sec_us06.png
+sec_us07.png
+sec_us08.png
+sec_us09.png
+sec_us10.png

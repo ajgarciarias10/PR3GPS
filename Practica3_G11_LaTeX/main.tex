@@ -1,0 +1,53 @@
+% Compilar con LuaLaTeX o XeLaTeX (Overleaf: Menu > Compiler > LuaLaTeX)
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\usepackage[spanish]{babel}
+\usepackage[a4paper,margin=2.5cm,headheight=15pt]{geometry}
+\usepackage{graphicx,xcolor,float,booktabs,array,tabularx,fancyhdr,titlesec,enumitem,caption,fvextra}
+\usepackage[hidelinks]{hyperref}
+\definecolor{ujablue}{HTML}{1F4E8C}
+\definecolor{ujapink}{HTML}{C2185B}
+\definecolor{gris}{HTML}{666666}
+\setlength{\parindent}{0pt}\setlength{\parskip}{0.6em}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small\color{gris}Gestión de Proyectos Software --- UJA}
+\rhead{\small\color{gris}Práctica 3: Arquitectura Ágil y UML con IA}
+\lfoot{\small\color{gris}Grupo \textbf{G11}}\rfoot{\small\color{gris}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}\renewcommand{\footrulewidth}{0.4pt}
+\titleformat{\section}{\Large\bfseries\color{ujablue}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{ujablue}}{\thesubsection.}{0.6em}{}
+\titleformat{\paragraph}[runin]{\bfseries}{}{0pt}{}[.]
+\fvset{fontsize=\scriptsize,breaklines=true,frame=single,framesep=2mm,rulecolor=\color{gris!50}}
+\captionsetup{font=small}
+
+% \bloqueGlobal{clave}{titulo}{alcance}   (Estructura A)
+\newcommand{\bloqueGlobal}[3]{%
+ \subsection{#2}
+ \paragraph{Alcance y contexto de partida} #3
+ \paragraph{Prompt enviado a la IA}\par\VerbatimInput{prompts/#1.txt}
+ \paragraph{Auditoría e informe de errores}\par\input{auditorias/#1.tex}
+ \paragraph{Código Mermaid corregido y diagrama renderizado}\par\VerbatimInput{codigo/#1.mmd}
+ \begin{figure}[H]\centering
+ \IfFileExists{figuras/#1.png}{\includegraphics[width=\linewidth,height=0.45\textheight,keepaspectratio]{figuras/#1.png}}{\fbox{\textcolor{red}{Falta figuras/#1.png}}}
+ \caption{#2.}\end{figure}}
+
+% \bloqueHU{clave}{id}{titulo}{texto HU}{criterios}   (Estructura B)
+\newcommand{\bloqueHU}[5]{%
+ \subsection{#2. #3}
+ \paragraph{Requisito / HU de partida} \textbf{#2.} #4 \emph{Criterios de aceptación:} #5
+ \paragraph{Prompt enviado a la IA}\par\VerbatimInput{prompts/#1.txt}
+ \paragraph{Auditoría e informe de errores}\par\input{auditorias/#1.tex}
+ \paragraph{Código Mermaid corregido y diagrama renderizado}\par\VerbatimInput{codigo/#1.mmd}
+ \begin{figure}[H]\centering
+ \IfFileExists{figuras/#1.png}{\includegraphics[width=\linewidth,height=0.4\textheight,keepaspectratio]{figuras/#1.png}}{\fbox{\textcolor{red}{Falta figuras/#1.png}}}
+ \caption{#2: #3.}\end{figure}}
+
+\begin{document}
+\input{portada}
+\tableofcontents
+\clearpage
+\input{introduccion}
+\input{bloque1}
+\input{bloque2}
+\input{bloque3}
+\end{document}

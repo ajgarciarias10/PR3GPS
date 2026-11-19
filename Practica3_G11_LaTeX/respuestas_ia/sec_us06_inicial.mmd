@@ -1,0 +1,21 @@
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+
+    U->>FE: Selecciona filtro de categoria (Vestidos, Blusas, Pantalones)
+    opt Selecciona filtro de talla
+        U->>FE: Selecciona su talla en el panel de filtros
+    end
+    FE->>BE: GET /api/products?category=Vestidos&size=M (Peticion asincrona sin recargar pagina)
+    BE->>DB: SELECT COUNT(*) OVER() AS total, * FROM products WHERE category = $1 AND size = $2
+    DB-->>BE: Retorna registros coincidentes y total
+    alt Existen productos que coinciden con los filtros
+        BE-->>FE: 200 OK (JSON con lista de productos y totalCount)
+        FE-->>U: Actualiza vista del catalogo dinamicamente y muestra contador de resultados (N productos encontrados)
+    else No existen productos coincidentes
+        BE-->>FE: 200 OK (JSON con lista vacia y totalCount = 0)
+        FE-->>U: Actualiza vista dinamicamente mostrando 0 resultados y mensaje informativo
+    end

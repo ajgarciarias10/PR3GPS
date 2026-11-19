@@ -1,0 +1,49 @@
+usecase-beta
+direction LR
+accTitle: Casos de uso generales de Atelier Jaén
+actor Visitante("Visitante / Cliente")
+actor ClienteReg("Cliente registrada")
+actor Admin("Administradora")
+actor Pasarela("Pasarela de pago")@{ type: hollow }
+actor Correo("Servicio de correo")@{ type: hollow }
+systemBoundary catalogo["Catálogo y producto"]@{ type: package }
+  VerCatalogo("Ver catálogo principal - S1")
+  Ficha("Consultar ficha y talla - S1")
+  Filtrar("Filtrar por categoría y talla - S2")
+  Guia("Consultar guía de tallas - S3")
+end
+systemBoundary compra["Compra y pago"]@{ type: package }
+  Cesta("Gestionar cesta - S1")
+  Cupon("Aplicar cupón - S3")
+  PagarTarjeta("Pagar con tarjeta - S1")
+  PagarBizum("Pagar con Bizum - S2")
+  Confirmar("Confirmar pedido")
+  Email("Enviar email de pedido")
+end
+systemBoundary cuenta["Cuenta de cliente"]@{ type: package }
+  Registro("Registrarse e iniciar sesión - S2")
+  Historial("Consultar historial de pedidos - S2")
+end
+systemBoundary admin["Administración PYME"]@{ type: package }
+  GestionPedidos("Gestionar pedidos - S1")
+  MarcarEnviado("Marcar pedido como enviado - S1")
+end
+ClienteReg --|> Visitante
+Visitante --> VerCatalogo
+Visitante --> Ficha
+Visitante --> Cesta
+Visitante --> PagarTarjeta
+Visitante --> PagarBizum
+Visitante --> Registro
+ClienteReg --> Historial
+Admin --> GestionPedidos
+Pasarela --> PagarTarjeta
+Pasarela --> PagarBizum
+Correo --> Email
+Filtrar ..> : extend VerCatalogo
+Guia ..> : extend Ficha
+Cupon ..> : extend Cesta
+MarcarEnviado ..> : extend GestionPedidos
+PagarTarjeta ..> : include Confirmar
+PagarBizum ..> : include Confirmar
+Confirmar ..> : include Email

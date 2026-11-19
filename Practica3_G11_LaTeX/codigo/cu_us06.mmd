@@ -1,0 +1,17 @@
+flowchart LR
+    subgraph SB6 ["Filtros del catálogo"]
+        FiltrarCatalogo([Filtrar catálogo])
+        ActualizarListado([Actualizar listado sin recargar la página])
+        MostrarContador([Mostrar contador de resultados])
+        PorCategoria([Filtrar por categoría])
+        PorTalla([Filtrar por talla])
+        LimpiarFiltros([Limpiar filtros])
+    end
+    Cliente("fa:fa-user<br>Cliente") --- FiltrarCatalogo
+    FiltrarCatalogo -->|«include»| ActualizarListado
+    FiltrarCatalogo -->|«include»| MostrarContador
+    PorCategoria -.->|«extend»| FiltrarCatalogo
+    PorTalla -.->|«extend»| FiltrarCatalogo
+    LimpiarFiltros -.->|«extend»| FiltrarCatalogo
+    classDef actor fill:none,stroke:none;
+    class Cliente actor;

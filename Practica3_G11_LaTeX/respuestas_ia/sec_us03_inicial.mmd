@@ -1,0 +1,46 @@
+sequenceDiagram
+    autonumber
+    actor U as Cliente
+    participant FE as Frontend
+    participant BE as Backend
+    participant DB as Base de datos
+
+    U->>FE: Accede a la vista de la cesta de la compra
+    FE->>BE: GET /api/cart
+    BE->>DB: SELECT articulos del carrito, precios y stock
+    DB-->>BE: Datos de articulos y stock actual
+    BE->>BE: Calcula subtotal, impuestos y gastos de envio
+    BE-->>FE: 200 OK (Articulos y desglose de costes)
+    FE-->>U: Muestra articulos, cantidades, subtotal y gastos de envio
+
+    opt Modificar cantidad de un articulo
+        U->>FE: Cambia la cantidad de una prenda (talla/color)
+        FE->>BE: PATCH /api/cart/items/{itemId} (nueva cantidad)
+        BE->>DB: SELECT stock disponible para la variante
+        DB-->>BE: Cantidad en stock
+        alt Stock suficiente
+            BE->>DB: UPDATE cantidad del articulo en el carrito
+            DB-->>BE: Confirmacion de actualizacion
+            BE->>BE: Recalcula subtotal y gastos de envio en tiempo real
+            BE-->>FE: 200 OK (Carrito actualizado y nuevo desglose de costes)
+            FE-->>U: Actualiza cantidad y desglose de costes en pantalla
+        else Stock insuficiente
+            BE-->>FE: 409 Conflict (Stock maximo superado)
+            FE-->>U: Muestra aviso de limite de stock disponible
+        end
+    end
+
+    opt Eliminar un articulo del carrito
+        U->>FE: Pulsa eliminar sobre un articulo
+        FE->>BE: DELETE /api/cart/items/{itemId}
+        BE->>DB: DELETE articulo del carrito
+        DB-->>BE: Confirmacion de borrado
+        BE->>BE: Recalcula subtotal y gastos de envio en tiempo real
+        alt Carrito con articulos restantes
+            BE-->>FE: 200 OK (Carrito actualizado y nuevo desglose de costes)
+            FE-->>U: Elimina articulo de la vista y actualiza costes
+        else Carrito vacio
+            BE-->>FE: 200 OK (Carrito vacio, costes a cero)
+            FE-->>U: Muestra mensaje de cesta vacia
+        end
+    end

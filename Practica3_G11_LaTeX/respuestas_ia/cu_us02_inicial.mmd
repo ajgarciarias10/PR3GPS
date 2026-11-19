@@ -1,0 +1,15 @@
+flowchart LR
+    Cliente("fa:fa-user<br>Cliente")
+
+    subgraph BoutiqueModa ["Módulo de Catálogo y Detalle de Producto"]
+        UC2([Acceder a Ficha de Detalle])
+        UC2_1([Seleccionar Talla Interactiva])
+        UC2_2([Añadir Producto al Carrito])
+    end
+
+    Cliente --- UC2
+    UC2 -->|«include»| UC2_1
+    UC2_2 -.->|«extend»| UC2
+
+    classDef actor fill:none,stroke:none;
+    class Cliente actor;

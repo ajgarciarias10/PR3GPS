@@ -1,0 +1,13 @@
+Actúa como un Arquitecto de Software experto en UML. Analiza la siguiente Historia de Usuario y genera el código Mermaid para su Diagrama de Casos de Uso individual siguiendo estrictamente estas reglas de sintaxis:
+1. Utiliza siempre la cabecera 'flowchart LR'.
+2. Encapsula los casos de uso dentro de un 'subgraph' que represente el límite del sistema: subgraph IDLimpio ["Nombre del Sistema o Módulo"]
+3. Define los Casos de Uso como nodos redondeados: IDCaso([Nombre del Caso de Uso]).
+4. Representa a los Actores con icono FontAwesome y salto de línea: IDActor("fa:fa-user<br>Nombre Actor").
+5. Asociaciones Actor-Caso de Uso: Línea continua sin flecha (IDActor --- IDCaso). Solo puede haber una asociación de este tipo. El resto deben estar catalogadas como relaciones Include o relaciones Extend.
+6. Relación Include (flecha continua): CasoBase -->|«include»| CasoIncluido
+7. Relación Extend (flecha discontinua): CasoOpcional -.->|«extend»| CasoBase
+8. IMPORTANTE: Usa exclusivamente comillas latinas « y » para los estereotipos include y extend. NO utilices símbolos < > ni << >>.
+9. Al final del código, elimina el borde del nodo del actor añadiendo:
+classDef actor fill:none,stroke:none;
+class IDActor actor;
+Historia de Usuario a procesar: US-6. Filtrado por Categoría y Tallas (Sprint 2). Como clienta, quiero filtrar el catálogo por categorías (Vestidos, Blusas, Pantalones) y por mi talla para encontrar rápidamente lo que busco. Criterios de aceptación: Filtro dinámico sin necesidad de recargar la página por completo; muestra contador de resultados coincidentes.

@@ -1,0 +1,18 @@
+flowchart LR
+    Cliente("fa:fa-user<br>Cliente")
+
+    subgraph SistemaEcommerce ["E-commerce Boutique de Moda - Catálogo"]
+        CU_US1([Visualizar catálogo principal])
+        CU_US1_1([Mostrar ficha básica de producto])
+        CU_US1_2([Calcular precio con IVA])
+        CU_US1_3([Consultar disponibilidad de stock])
+
+        CU_US1 -->|«include»| CU_US1_1
+        CU_US1 -->|«include»| CU_US1_2
+        CU_US1 -->|«include»| CU_US1_3
+    end
+
+    Cliente --- CU_US1
+
+    classDef actor fill:none,stroke:none;
+    class Cliente actor;
