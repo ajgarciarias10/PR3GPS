@@ -1,110 +1,156 @@
 erDiagram
     USUARIO {
         int id_usuario PK
-        string nombre
         string email UK
         string password_hash
+        string nombre
+        string apellidos
         string telefono
-        string rol "CLIENTE o ADMIN"
-        datetime fecha_registro
+        string rol "cliente | administradora"
+        string token_recordar "recordar sesion"
+        boolean activo
+        timestamp fecha_registro
     }
     DIRECCION {
         int id_direccion PK
         int id_usuario FK
-        string direccion
+        string alias
+        string nombre_destinatario
+        string telefono
+        string calle
         string codigo_postal
         string ciudad
         string provincia
+        string pais
+        boolean es_predeterminada
     }
     CATEGORIA {
         int id_categoria PK
         string nombre UK
-    }
-    MEDIDA_TALLA {
-        int id_medida PK
-        int id_categoria FK
-        string talla
-        int pecho_cm
-        int cintura_cm
-        int cadera_cm
+        string slug UK
+        string descripcion
+        boolean activa
     }
     PRODUCTO {
         int id_producto PK
         int id_categoria FK
+        string sku UK
         string nombre
-        string descripcion
-        decimal precio_iva
+        string slug UK
+        text descripcion
+        decimal precio_base
+        decimal porcentaje_iva
+        decimal precio_con_iva "derivado: precio_base x (1 + porcentaje_iva/100)"
         string imagen_url
         boolean activo
+        timestamp fecha_creacion
     }
-    STOCK_TALLA {
-        int id_stock PK
+    TALLA {
+        int id_talla PK
+        string codigo UK "XS | S | M | L | XL"
+        int orden
+    }
+    PRODUCTO_TALLA {
+        int id_producto_talla PK
         int id_producto FK
-        string talla
-        int unidades
+        int id_talla FK
+        string sku_variante UK
+        int stock_disponible
+        int stock_reservado
+    }
+    GUIA_TALLA {
+        int id_guia_talla PK
+        int id_talla FK
+        int id_categoria FK "nullable"
+        decimal pecho_cm
+        decimal cintura_cm
+        decimal cadera_cm
+    }
+    CUPON {
+        int id_cupon PK
+        string codigo UK
+        string tipo_descuento "porcentaje | fijo"
+        decimal valor_descuento
+        decimal importe_minimo
+        timestamp fecha_inicio
+        timestamp fecha_fin
+        int usos_maximos
+        int usos_actuales
+        boolean activo
     }
     CARRITO {
         int id_carrito PK
-        int id_usuario FK "nulo si es invitado"
-        string cupon_codigo FK
-        datetime actualizado_en
+        int id_usuario FK "nullable"
+        int id_cupon FK "nullable"
+        string token_sesion UK
+        decimal gastos_envio_estimados
+        timestamp fecha_actualizacion
     }
     LINEA_CARRITO {
         int id_linea_carrito PK
         int id_carrito FK
-        int id_producto FK
-        string talla
+        int id_producto_talla FK
         int cantidad
-    }
-    CUPON {
-        string codigo PK
-        string tipo "PORCENTAJE o IMPORTE"
-        decimal valor
-        date fecha_caducidad
-        boolean activo
+        decimal precio_unitario
     }
     PEDIDO {
         int id_pedido PK
         string numero_pedido UK
-        int id_usuario FK "nulo si es invitado"
-        string cupon_codigo FK
-        datetime fecha
-        string estado "PENDIENTE o ENVIADO"
-        string email_contacto
+        int id_usuario FK "nullable para invitado"
+        int id_direccion FK "nullable"
+        int id_cupon FK "nullable"
+        string email_cliente
+        string nombre_destinatario
         string telefono_contacto
-        string direccion_envio
+        string direccion_entrega
+        string codigo_postal
+        string ciudad
+        string provincia
+        string pais
+        string estado_pedido "Pendiente | Enviado"
         decimal subtotal
         decimal gastos_envio
-        decimal descuento
+        decimal descuento_aplicado
         decimal total
+        timestamp fecha_pedido
+        timestamp fecha_envio
     }
     LINEA_PEDIDO {
         int id_linea_pedido PK
         int id_pedido FK
-        int id_producto FK
-        string talla
+        int id_producto_talla FK
+        string nombre_producto
+        string talla_producto
         int cantidad
-        decimal precio_unitario
+        decimal precio_unitario_iva
+        decimal subtotal_linea
     }
     PAGO {
         int id_pago PK
         int id_pedido FK
-        string metodo "TARJETA o BIZUM"
-        string estado "APROBADO o RECHAZADO"
-        string referencia_pasarela
+        string metodo_pago "Tarjeta | Bizum"
+        string estado_pago "Pendiente | Autorizado | Completado | Fallido"
         decimal importe
-        datetime fecha
+        string referencia_pasarela UK
+        boolean soporte_3ds
+        string estado_3ds
+        string ultimos_digitos_tarjeta "nullable"
+        string telefono_bizum "nullable"
+        timestamp fecha_pago
     }
     USUARIO ||--o{ DIRECCION : "guarda"
-    USUARIO ||--o{ PEDIDO : "realiza"
-    USUARIO |o--o| CARRITO : "tiene"
+    USUARIO |o--o| CARRITO : "mantiene"
+    USUARIO |o--o{ PEDIDO : "realiza"
+    DIRECCION |o--o{ PEDIDO : "recibe"
     CATEGORIA ||--o{ PRODUCTO : "clasifica"
-    CATEGORIA ||--o{ MEDIDA_TALLA : "define guía de tallas"
-    PRODUCTO ||--|{ STOCK_TALLA : "tiene existencias por"
+    CATEGORIA |o--o{ GUIA_TALLA : "agrupa"
+    PRODUCTO ||--|{ PRODUCTO_TALLA : "dispone"
+    TALLA ||--o{ PRODUCTO_TALLA : "asigna"
+    TALLA ||--o{ GUIA_TALLA : "define"
+    CUPON |o--o{ CARRITO : "descuenta"
+    CUPON |o--o{ PEDIDO : "aplica"
     CARRITO ||--o{ LINEA_CARRITO : "contiene"
-    PRODUCTO ||--o{ LINEA_CARRITO : "se añade en"
-    CUPON |o--o{ CARRITO : "se aplica a"
-    CUPON |o--o{ PEDIDO : "descuenta en"
-    PEDIDO ||--|{ LINEA_PEDIDO : "se compone de"
-    PRODUCTO ||--o{ LINEA_PEDIDO : "se vende en"
-    PEDIDO ||--o{ PAGO : "se abona con"
+    LINEA_CARRITO }o--|| PRODUCTO_TALLA : "referencia"
+    PEDIDO ||--|{ LINEA_PEDIDO : "detalla"
+    LINEA_PEDIDO }o--|| PRODUCTO_TALLA : "referencia"
+    PEDIDO ||--o{ PAGO : "genera"

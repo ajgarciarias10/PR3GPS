@@ -1,142 +1,282 @@
 classDiagram
-direction LR
-class Usuario {
-    <<abstract>>
-    -int id
-    -String nombre
-    -String email
-    -String passwordHash
-    +iniciarSesion(String email, String password) boolean
-    +cerrarSesion() void
-}
-class Cliente {
-    -String telefono
-    -Date fechaRegistro
-    +registrarse(String nombre, String email, String password) Cliente
-    +guardarDireccion(Direccion d) void
-    +consultarHistorial() List~Pedido~
-}
-class Administradora {
-    +listarPedidosPagados() List~Pedido~
-    +marcarPedidoEnviado(int idPedido) void
-}
-class Direccion {
-    -String direccion
-    -String codigoPostal
-    -String ciudad
-    -String provincia
-}
-class Categoria {
-    -int id
-    -String nombre
-    +obtenerMedidas() List~MedidaTalla~
-}
-class MedidaTalla {
-    -String talla
-    -int pechoCm
-    -int cinturaCm
-    -int caderaCm
-}
-class Producto {
-    -int id
-    -String nombre
-    -String descripcion
-    -double precioIva
-    -String imagenUrl
-    +estaDisponible() boolean
-    +tallasDisponibles() List~String~
-}
-class StockTalla {
-    -String talla
-    -int unidades
-    +hayStock(int cantidad) boolean
-    +reservar(int cantidad) void
-}
-class Carrito {
-    -Date actualizadoEn
-    +agregarProducto(Producto p, String talla, int cantidad) void
-    +modificarCantidad(int idLinea, int cantidad) void
-    +eliminarLinea(int idLinea) void
-    +calcularSubtotal() double
-    +calcularEnvio() double
-    +aplicarCupon(String codigo) void
-    +calcularTotal() double
-}
-class LineaCarrito {
-    -String talla
-    -int cantidad
-    +calcularImporte() double
-}
-class Cupon {
-    -String codigo
-    -String tipo
-    -double valor
-    -Date fechaCaducidad
-    +esValido() boolean
-    +calcularDescuento(double subtotal) double
-}
-class Pedido {
-    -String numeroPedido
-    -Date fecha
-    -EstadoPedido estado
-    -double subtotal
-    -double gastosEnvio
-    -double descuento
-    -double total
-    +cambiarEstado(EstadoPedido e) void
-}
-class LineaPedido {
-    -String talla
-    -int cantidad
-    -double precioUnitario
-}
-class EstadoPedido {
-    <<enumeration>>
-    PENDIENTE
-    ENVIADO
-}
-class Pago {
-    <<abstract>>
-    -String referencia
-    -double importe
-    -String estado
-    +procesar() boolean
-}
-class PagoTarjeta {
-    -String titular
-    -String ultimos4
-    +autenticar3DS() boolean
-}
-class PagoBizum {
-    -String telefono
-    +solicitarAutorizacion() boolean
-}
-class PasarelaPago {
-    <<interface>>
-    +cobrar(Pago p) boolean
-}
-class ServicioCorreo {
-    <<interface>>
-    +enviarConfirmacion(Pedido p) void
-}
-Usuario <|-- Cliente
-Usuario <|-- Administradora
-Cliente "1" *-- "0..*" Direccion : guarda
-Cliente "1" --> "0..*" Pedido : realiza
-Cliente "0..1" --> "0..1" Carrito : tiene
-Categoria "1" o-- "0..*" Producto : clasifica
-Categoria "1" *-- "1..*" MedidaTalla : define
-Producto "1" *-- "1..*" StockTalla : existencias
-Carrito "1" *-- "0..*" LineaCarrito : contiene
-LineaCarrito "*" --> "1" Producto
-Carrito "*" --> "0..1" Cupon : aplica
-Pedido "*" --> "0..1" Cupon : descuenta
-Pedido "1" *-- "1..*" LineaPedido : se compone de
-LineaPedido "*" --> "1" Producto
-Pedido "1" --> "1" EstadoPedido
-Pedido "1" *-- "1..*" Pago : se abona con
-Pago <|-- PagoTarjeta
-Pago <|-- PagoBizum
-Pago ..> PasarelaPago : usa
-Pedido ..> ServicioCorreo : notifica
-Administradora ..> Pedido : gestiona
+    class EstadoPedido {
+        <<enumeration>>
+        PENDIENTE
+        ENVIADO
+    }
+    class EstadoPago {
+        <<enumeration>>
+        PENDIENTE
+        AUTORIZADO
+        COMPLETADO
+        FALLIDO
+    }
+    class TipoDescuento {
+        <<enumeration>>
+        PORCENTAJE
+        FIJO
+    }
+    class PasarelaPago {
+        <<interface>>
+        +iniciarPago(decimal importe, string referencia) string
+        +verificarEstado(string referenciaPasarela) EstadoPago
+    }
+    class ServicioCorreo {
+        <<interface>>
+        +enviarConfirmacionPedido(string email, Pedido pedido) boolean
+    }
+    class PasarelaTarjeta3DS {
+        -string merchantCode
+        -boolean entornoSandbox
+        +iniciarPago(decimal importe, string referencia) string
+        +verificarEstado(string referenciaPasarela) EstadoPago
+        +validarChallenge3DS(string token3ds) boolean
+    }
+    class PasarelaBizum {
+        -string merchantCode
+        -string urlCallback
+        +iniciarPago(decimal importe, string referencia) string
+        +verificarEstado(string referenciaPasarela) EstadoPago
+        +solicitarAutorizacionMovil(string telefono, decimal importe) string
+    }
+    class ServicioCorreoSMTP {
+        -string apiKey
+        -string remitente
+        +enviarConfirmacionPedido(string email, Pedido pedido) boolean
+    }
+    class Usuario {
+        <<abstract>>
+        #int idUsuario
+        #string email
+        #string passwordHash
+        #string nombre
+        #string apellidos
+        #string telefono
+        #string rol
+        #string tokenRecordar
+        #boolean activo
+        #timestamp fechaRegistro
+        +iniciarSesion(string email, string password, boolean recordar) boolean
+        +cerrarSesion() void
+        +validarPasswordSegura(string password) boolean
+    }
+    class Cliente {
+        +registrarse(string email, string password, string nombre, string apellidos) boolean
+        +guardarDireccion(Direccion direccion) Direccion
+        +eliminarDireccion(int idDireccion) boolean
+        +consultarHistorialPedidos() List~Pedido~
+    }
+    class Administradora {
+        +listarPedidosPagados() List~Pedido~
+        +marcarPedidoEnviado(Pedido pedido) boolean
+    }
+    class Direccion {
+        -int idDireccion
+        -int idUsuario
+        -string alias
+        -string nombreDestinatario
+        -string telefono
+        -string calle
+        -string codigoPostal
+        -string ciudad
+        -string provincia
+        -string pais
+        -boolean esPredeterminada
+        +establecerPredeterminada() void
+        +formatearCompleta() string
+    }
+    class Catalogo {
+        -List~Producto~ productos
+        +listarCatalogoPrincipal() List~Producto~
+        +filtrarProductos(int idCategoria, int idTalla) List~Producto~
+        +contarResultados(int idCategoria, int idTalla) int
+        +obtenerDetalleProducto(string slug) Producto
+    }
+    class Categoria {
+        -int idCategoria
+        -string nombre
+        -string slug
+        -string descripcion
+        -boolean activa
+        +obtenerProductosActivos() List~Producto~
+    }
+    class Producto {
+        -int idProducto
+        -int idCategoria
+        -string sku
+        -string nombre
+        -string slug
+        -string descripcion
+        -decimal precioBase
+        -decimal porcentajeIva
+        -decimal precioConIva
+        -string imagenUrl
+        -boolean activo
+        -timestamp fechaCreacion
+        +calcularPrecioConIva() decimal
+        +estaDisponible() boolean
+        +obtenerTallasDisponibles() List~ProductoTalla~
+        +obtenerGuiaTallas() List~GuiaTalla~
+    }
+    class Talla {
+        -int idTalla
+        -string codigo
+        -int orden
+        +obtenerMedidas(int idCategoria) GuiaTalla
+    }
+    class ProductoTalla {
+        -int idProductoTalla
+        -int idProducto
+        -int idTalla
+        -string skuVariante
+        -int stockDisponible
+        -int stockReservado
+        +tieneStock(int cantidad) boolean
+        +reservarStock(int cantidad) boolean
+        +liberarReserva(int cantidad) void
+        +descontarStock(int cantidad) boolean
+    }
+    class GuiaTalla {
+        -int idGuiaTalla
+        -int idTalla
+        -int idCategoria
+        -decimal pechoCm
+        -decimal cinturaCm
+        -decimal caderaCm
+        +obtenerTablaMedidas(int idCategoria) List~GuiaTalla~
+    }
+    class Cupon {
+        -int idCupon
+        -string codigo
+        -TipoDescuento tipoDescuento
+        -decimal valorDescuento
+        -decimal importeMinimo
+        -timestamp fechaInicio
+        -timestamp fechaFin
+        -int usosMaximos
+        -int usosActuales
+        -boolean activo
+        +esValido(decimal subtotal) boolean
+        +calcularDescuento(decimal subtotal) decimal
+        +registrarUso() void
+    }
+    class Carrito {
+        -int idCarrito
+        -int idUsuario
+        -int idCupon
+        -string tokenSesion
+        -decimal gastosEnvioEstimados
+        -timestamp fechaActualizacion
+        +agregarProducto(ProductoTalla variante, int cantidad) void
+        +modificarCantidad(int idLineaCarrito, int cantidad) void
+        +eliminarLinea(int idLineaCarrito) void
+        +aplicarCupon(Cupon cupon) boolean
+        +calcularSubtotal() decimal
+        +calcularDescuento() decimal
+        +calcularGastosEnvio() decimal
+        +calcularTotal() decimal
+        +vaciar() void
+    }
+    class LineaCarrito {
+        -int idLineaCarrito
+        -int idCarrito
+        -int idProductoTalla
+        -int cantidad
+        -decimal precioUnitario
+        +actualizarCantidad(int nuevaCantidad) void
+        +calcularSubtotalLinea() decimal
+    }
+    class Pedido {
+        -int idPedido
+        -string numeroPedido
+        -int idUsuario
+        -int idDireccion
+        -int idCupon
+        -string emailCliente
+        -string nombreDestinatario
+        -string telefonoContacto
+        -string direccionEntrega
+        -string codigoPostal
+        -string ciudad
+        -string provincia
+        -string pais
+        -EstadoPedido estadoPedido
+        -decimal subtotal
+        -decimal gastosEnvio
+        -decimal descuentoAplicado
+        -decimal total
+        -timestamp fechaPedido
+        -timestamp fechaEnvio
+        +crearDesdeCarrito(Carrito carrito, string email, Direccion direccion) Pedido$
+        +esInvitado() boolean
+        +confirmarPago(Pago pago, ServicioCorreo correo) void
+        +marcarEnviado() void
+        +obtenerDatosEntrega() string
+    }
+    class LineaPedido {
+        -int idLineaPedido
+        -int idPedido
+        -int idProductoTalla
+        -string nombreProducto
+        -string tallaProducto
+        -int cantidad
+        -decimal precioUnitarioIva
+        -decimal subtotalLinea
+        +calcularSubtotalLinea() decimal
+    }
+    class Pago {
+        <<abstract>>
+        #int idPago
+        #int idPedido
+        #EstadoPago estadoPago
+        #decimal importe
+        #string referenciaPasarela
+        #timestamp fechaPago
+        +procesarPago(PasarelaPago pasarela) boolean
+        +confirmarPago() void
+        +marcarFallido() void
+    }
+    class PagoTarjeta {
+        -boolean soporte3ds
+        -string estado3ds
+        -string ultimosDigitosTarjeta
+        +procesarPago(PasarelaPago pasarela) boolean
+        +autenticar3DS(string token3ds) boolean
+    }
+    class PagoBizum {
+        -string telefonoBizum
+        +procesarPago(PasarelaPago pasarela) boolean
+        +solicitarAutorizacionApp(string telefono) boolean
+    }
+    Usuario <|-- Cliente
+    Usuario <|-- Administradora
+    Pago <|-- PagoTarjeta
+    Pago <|-- PagoBizum
+    PasarelaPago <|.. PasarelaTarjeta3DS
+    PasarelaPago <|.. PasarelaBizum
+    ServicioCorreo <|.. ServicioCorreoSMTP
+    Cliente "1" o-- "0..*" Direccion : guarda
+    Catalogo "1" o-- "0..*" Producto : agrupa
+    Categoria "1" o-- "0..*" Producto : clasifica
+    Producto "1" *-- "1..*" ProductoTalla : dispone
+    Carrito "1" *-- "0..*" LineaCarrito : contiene
+    Pedido "1" *-- "1..*" LineaPedido : detalla
+    Pedido "1" *-- "0..*" Pago : genera
+    Cliente "0..1" --> "0..*" Carrito : mantiene
+    Cliente "0..1" --> "0..*" Pedido : realiza
+    Pedido "0..*" --> "0..1" Direccion : enviaA
+    Carrito "0..*" --> "0..1" Cupon : aplica
+    Pedido "0..*" --> "0..1" Cupon : aplica
+    LineaCarrito "0..*" --> "1" ProductoTalla : referencia
+    LineaPedido "0..*" --> "1" ProductoTalla : referencia
+    Talla "1" -- "0..*" ProductoTalla : asigna
+    Talla "1" -- "0..*" GuiaTalla : define
+    Categoria "0..1" -- "0..*" GuiaTalla : contextualiza
+    Catalogo ..> Categoria : filtraPor
+    Catalogo ..> Talla : filtraPor
+    Pedido ..> ServicioCorreo : notificaCon
+    PagoTarjeta ..> PasarelaPago : utiliza
+    PagoBizum ..> PasarelaPago : utiliza
+    Pedido ..> EstadoPedido : usa
+    Pago ..> EstadoPago : usa
+    Cupon ..> TipoDescuento : usa
