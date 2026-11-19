@@ -10,26 +10,31 @@ sequenceDiagram
     U->>FE: pagarConBizum(telefono)
     FE->>FE: validarFormatoTelefono(telefono)
     FE->>BE: crearPedido(contacto, direccionEnvio, telefono) : POST /api/pedidos
-    BE->>BE: StockTalla.reservar(cantidad)
+    BE->>BE: ProductoTalla.reservarStock(cantidad)
     BE->>DB: savePedido(PENDIENTE)
     DB-->>BE: Pedido (idPedido, numeroPedido)
-    BE->>PB: PasarelaPago.cobrar(PagoBizum)
-    PB->>BK: PagoBizum.solicitarAutorizacion()
+    BE->>BE: PagoBizum.procesarPago(pasarela)
+    BE->>PB: PasarelaPago.iniciarPago(importe, numeroPedido)
+    PB->>BK: PasarelaBizum.solicitarAutorizacionMovil(telefono, importe)
     BK->>U: notificarSolicitudPago(importe)
     U->>BK: responderSolicitud(idOperacion, autorizada)
     BK-->>PB: resultadoAutorizacion
-    alt cobrar() == true
-        PB-->>BE: true : referencia
-        BE->>DB: savePago(APROBADO)
-        BE->>DB: descontarStock()
-        BE->>DB: vaciarCarrito()
+    PB-->>BE: referenciaPasarela
+    BE->>PB: PasarelaPago.verificarEstado(referenciaPasarela)
+    alt verificarEstado() == COMPLETADO
+        PB-->>BE: COMPLETADO
+        BE->>BE: Pedido.confirmarPago(pago, correo)
+        BE->>BE: ProductoTalla.descontarStock(cantidad)
+        BE->>BE: Carrito.vaciar()
+        BE->>DB: savePago(COMPLETADO)
         DB-->>BE: OK
         BE-->>FE: 200 OK : numeroPedido
         FE-->>U: mostrarConfirmacion(numeroPedido)
-    else cobrar() == false or timeout
-        PB-->>BE: false
-        BE->>DB: savePago(RECHAZADO)
-        BE->>DB: liberarReservaStock()
+    else verificarEstado() == FALLIDO or timeout
+        PB-->>BE: FALLIDO
+        BE->>BE: Pago.marcarFallido()
+        BE->>BE: ProductoTalla.liberarReserva(cantidad)
+        BE->>DB: savePago(FALLIDO)
         DB-->>BE: OK
         BE-->>FE: 402 Payment Required
         FE-->>U: mostrarErrorPago()

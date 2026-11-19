@@ -8,10 +8,10 @@ sequenceDiagram
     U->>FE: abrirCatalogo()
     FE->>BE: listarProductos() : GET /api/productos
     BE->>DB: findAllProductosConStock()
-    DB-->>BE: Producto[] con StockTalla[]
+    DB-->>BE: Producto[] con ProductoTalla[]
     loop for producto in productos
         BE->>BE: Producto.estaDisponible()
-        BE->>BE: Producto.tallasDisponibles()
+        BE->>BE: Producto.obtenerTallasDisponibles()
     end
     BE-->>FE: 200 OK : Producto[]
     alt productos.size() > 0

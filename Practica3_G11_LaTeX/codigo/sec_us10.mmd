@@ -7,10 +7,10 @@ sequenceDiagram
     participant DB as Base de datos
     U->>FE: abrirGuiaTallas(idProducto)
     FE->>BE: obtenerMedidas(idCategoria) : GET /api/categorias/idCategoria/medidas
-    BE->>DB: findMedidasByCategoria(idCategoria)
-    DB-->>BE: MedidaTalla[]
-    BE->>BE: Categoria.obtenerMedidas()
-    BE-->>FE: 200 OK : MedidaTalla[] (pechoCm, cinturaCm, caderaCm)
+    BE->>DB: findGuiaTallaByCategoria(idCategoria)
+    DB-->>BE: GuiaTalla[]
+    BE->>BE: GuiaTalla.obtenerTablaMedidas(idCategoria)
+    BE-->>FE: 200 OK : GuiaTalla[] (pechoCm, cinturaCm, caderaCm)
     FE-->>U: mostrarModalMedidas(medidas)
     opt seleccionarTalla(talla)
         U->>FE: seleccionarTalla(talla)

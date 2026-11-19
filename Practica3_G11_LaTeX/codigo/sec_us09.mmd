@@ -9,16 +9,16 @@ sequenceDiagram
     FE->>BE: aplicarCupon(codigo) : PUT /api/carrito/cupon
     BE->>DB: findCuponByCodigo(codigo)
     DB-->>BE: Cupon o null
-    BE->>BE: Cupon.esValido()
-    alt esValido() == true
-        BE->>BE: Carrito.aplicarCupon(codigo)
+    BE->>BE: Cupon.esValido(subtotal)
+    alt esValido(subtotal) == true
+        BE->>BE: Carrito.aplicarCupon(cupon)
         BE->>BE: Cupon.calcularDescuento(subtotal)
         BE->>BE: Carrito.calcularTotal()
         BE->>DB: saveCarrito(carrito)
         DB-->>BE: OK
         BE-->>FE: 200 OK : Carrito con descuento
         FE-->>U: actualizarTotal(carrito)
-    else cupon == null or esValido() == false
+    else cupon == null or esValido(subtotal) == false
         BE-->>FE: 422 Unprocessable Entity
         FE-->>U: mostrarErrorCupon()
     end

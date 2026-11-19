@@ -10,26 +10,31 @@ sequenceDiagram
     U->>FE: pagar(datosEnvio, datosTarjeta)
     FE->>FE: validarCamposTarjeta()
     FE->>BE: crearPedido(contacto, direccionEnvio, datosTarjeta) : POST /api/pedidos
-    BE->>BE: StockTalla.reservar(cantidad)
+    BE->>BE: ProductoTalla.reservarStock(cantidad)
     BE->>DB: savePedido(PENDIENTE)
     DB-->>BE: Pedido (idPedido, numeroPedido)
-    BE->>PG: PasarelaPago.cobrar(PagoTarjeta)
-    PG->>U: PagoTarjeta.autenticar3DS()
+    BE->>BE: PagoTarjeta.procesarPago(pasarela)
+    BE->>PG: PasarelaPago.iniciarPago(importe, numeroPedido)
+    PG->>U: PagoTarjeta.autenticar3DS(token3ds)
     U->>PG: confirmar3DS(codigoOTP)
-    alt cobrar() == true
-        PG-->>BE: true : referencia
-        BE->>DB: savePago(APROBADO)
-        BE->>DB: descontarStock()
-        BE->>DB: vaciarCarrito()
+    PG-->>BE: referenciaPasarela
+    BE->>PG: PasarelaPago.verificarEstado(referenciaPasarela)
+    alt verificarEstado() == COMPLETADO
+        PG-->>BE: COMPLETADO
+        BE->>BE: Pedido.confirmarPago(pago, correo)
+        BE->>BE: ProductoTalla.descontarStock(cantidad)
+        BE->>BE: Carrito.vaciar()
+        BE->>DB: savePago(COMPLETADO)
         DB-->>BE: OK
-        BE->>CO: ServicioCorreo.enviarConfirmacion(Pedido)
+        BE->>CO: ServicioCorreo.enviarConfirmacionPedido(email, pedido)
         CO-->>BE: OK
         BE-->>FE: 200 OK : numeroPedido
         FE-->>U: mostrarConfirmacion(numeroPedido)
-    else cobrar() == false
-        PG-->>BE: false
-        BE->>DB: savePago(RECHAZADO)
-        BE->>DB: liberarReservaStock()
+    else verificarEstado() == FALLIDO
+        PG-->>BE: FALLIDO
+        BE->>BE: Pago.marcarFallido()
+        BE->>BE: ProductoTalla.liberarReserva(cantidad)
+        BE->>DB: savePago(FALLIDO)
         DB-->>BE: OK
         BE-->>FE: 402 Payment Required
         FE-->>U: mostrarErrorPago()

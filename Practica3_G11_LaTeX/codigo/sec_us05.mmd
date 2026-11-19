@@ -9,9 +9,9 @@ sequenceDiagram
     FE->>BE: login(email, password) : POST /api/auth/login
     BE->>DB: findUsuarioByEmail(email)
     DB-->>BE: Usuario (passwordHash, rol)
-    BE->>BE: Usuario.iniciarSesion(email, password)
-    alt usuario.rol == ADMIN
-        BE-->>FE: 200 OK : tokenSesion
+    BE->>BE: Usuario.iniciarSesion(email, password, recordar)
+    alt usuario.rol == administradora
+        BE-->>FE: 200 OK : tokenRecordar
         FE->>BE: listarPedidos() : GET /api/admin/pedidos
         BE->>BE: Administradora.listarPedidosPagados()
         BE->>DB: findPedidosPagados()
@@ -21,14 +21,14 @@ sequenceDiagram
         opt marcarComoEnviado(idPedido)
             U->>FE: marcarComoEnviado(idPedido)
             FE->>BE: actualizarEstado(idPedido, ENVIADO) : PATCH /api/admin/pedidos/idPedido
-            BE->>BE: Administradora.marcarPedidoEnviado(idPedido)
-            BE->>BE: Pedido.cambiarEstado(ENVIADO)
+            BE->>BE: Administradora.marcarPedidoEnviado(pedido)
+            BE->>BE: Pedido.marcarEnviado()
             BE->>DB: updatePedido(pedido)
             DB-->>BE: OK
             BE-->>FE: 200 OK : Pedido
             FE-->>U: refrescarTabla(pedido)
         end
-    else usuario.rol != ADMIN
+    else usuario.rol != administradora
         BE-->>FE: 403 Forbidden
         FE-->>U: mostrarAccesoDenegado()
     end

@@ -5,14 +5,14 @@ sequenceDiagram
     participant FE as Frontend
     participant BE as Backend
     participant DB as Base de datos
-    U->>FE: enviarRegistro(nombre, email, password)
+    U->>FE: enviarRegistro(nombre, apellidos, email, password)
     FE->>FE: validarPasswordSegura(password)
-    FE->>BE: registrar(nombre, email, password) : POST /api/auth/registro
+    FE->>BE: registrar(nombre, apellidos, email, password) : POST /api/auth/registro
     BE->>DB: existsUsuarioByEmail(email)
     DB-->>BE: boolean existe
     alt existsUsuarioByEmail(email) == false
         BE->>BE: hashPassword(password)
-        BE->>BE: Cliente.registrarse(nombre, email, passwordHash)
+        BE->>BE: Cliente.registrarse(email, passwordHash, nombre, apellidos)
         BE->>DB: saveCliente(cliente)
         DB-->>BE: idUsuario
         BE-->>FE: 201 Created : Cliente
@@ -25,11 +25,11 @@ sequenceDiagram
     FE->>BE: login(email, password, recordarSesion) : POST /api/auth/login
     BE->>DB: findUsuarioByEmail(email)
     DB-->>BE: Cliente (passwordHash)
-    BE->>BE: Usuario.iniciarSesion(email, password)
+    BE->>BE: Usuario.iniciarSesion(email, password, recordarSesion)
     alt iniciarSesion() == true
-        BE-->>FE: 200 OK : tokenSesion
+        BE-->>FE: 200 OK : tokenRecordar
         FE->>BE: obtenerHistorial() : GET /api/cuenta/pedidos
-        BE->>BE: Cliente.consultarHistorial()
+        BE->>BE: Cliente.consultarHistorialPedidos()
         BE->>DB: findPedidosByCliente(idUsuario)
         DB-->>BE: Pedido[]
         BE-->>FE: 200 OK : Pedido[]
@@ -41,7 +41,7 @@ sequenceDiagram
     opt anadirDireccion(direccion)
         U->>FE: anadirDireccion(direccion)
         FE->>BE: guardarDireccion(direccion) : POST /api/cuenta/direcciones
-        BE->>BE: Cliente.guardarDireccion(Direccion)
+        BE->>BE: Cliente.guardarDireccion(direccion)
         BE->>DB: saveDireccion(direccion)
         DB-->>BE: OK
         BE-->>FE: 201 Created : Direccion

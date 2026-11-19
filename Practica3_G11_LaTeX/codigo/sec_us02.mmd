@@ -10,25 +10,25 @@ sequenceDiagram
     BE->>DB: findProductoById(id)
     DB-->>BE: Producto
     BE->>DB: findStockByProducto(id)
-    DB-->>BE: StockTalla[]
-    BE->>BE: Producto.tallasDisponibles()
+    DB-->>BE: ProductoTalla[]
+    BE->>BE: Producto.obtenerTallasDisponibles()
     BE-->>FE: 200 OK : Producto, tallasDisponibles
     FE->>FE: deshabilitarTallasAgotadas(tallas)
     FE-->>U: mostrarFicha(producto)
     U->>FE: anadirAlCarrito(talla, cantidad)
     FE->>BE: agregarLinea(idProducto, talla, cantidad) : POST /api/carrito/lineas
     BE->>DB: findStockByTalla(idProducto, talla)
-    DB-->>BE: StockTalla
-    BE->>BE: StockTalla.hayStock(cantidad)
-    alt hayStock(cantidad) == true
-        BE->>BE: Carrito.agregarProducto(p, talla, cantidad)
-        BE->>BE: LineaCarrito.calcularImporte()
+    DB-->>BE: ProductoTalla
+    BE->>BE: ProductoTalla.tieneStock(cantidad)
+    alt tieneStock(cantidad) == true
+        BE->>BE: Carrito.agregarProducto(variante, cantidad)
+        BE->>BE: LineaCarrito.calcularSubtotalLinea()
         BE->>BE: Carrito.calcularTotal()
         BE->>DB: saveCarrito(carrito)
         DB-->>BE: OK
         BE-->>FE: 201 Created : Carrito
         FE-->>U: mostrarConfirmacionCesta()
-    else hayStock(cantidad) == false
+    else tieneStock(cantidad) == false
         BE-->>FE: 409 Conflict
         FE-->>U: mostrarAvisoTallaAgotada(talla)
     end

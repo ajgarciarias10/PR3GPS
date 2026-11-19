@@ -10,7 +10,7 @@ sequenceDiagram
     BE->>DB: findCarritoConLineas(idCarrito)
     DB-->>BE: Carrito con LineaCarrito[]
     BE->>BE: Carrito.calcularSubtotal()
-    BE->>BE: Carrito.calcularEnvio()
+    BE->>BE: Carrito.calcularGastosEnvio()
     BE->>BE: Carrito.calcularTotal()
     BE-->>FE: 200 OK : Carrito con desglose
     FE-->>U: mostrarCesta(carrito)
@@ -18,17 +18,17 @@ sequenceDiagram
         U->>FE: cambiarCantidad(idLinea, cantidad)
         FE->>BE: modificarLinea(idLinea, cantidad) : PATCH /api/carrito/lineas/idLinea
         BE->>DB: findStockByLinea(idLinea)
-        DB-->>BE: StockTalla
-        BE->>BE: StockTalla.hayStock(cantidad)
-        alt hayStock(cantidad) == true
+        DB-->>BE: ProductoTalla
+        BE->>BE: ProductoTalla.tieneStock(cantidad)
+        alt tieneStock(cantidad) == true
             BE->>BE: Carrito.modificarCantidad(idLinea, cantidad)
-            BE->>BE: LineaCarrito.calcularImporte()
+            BE->>BE: LineaCarrito.calcularSubtotalLinea()
             BE->>BE: Carrito.calcularTotal()
             BE->>DB: saveCarrito(carrito)
             DB-->>BE: OK
             BE-->>FE: 200 OK : Carrito
             FE-->>U: actualizarImportes(carrito)
-        else hayStock(cantidad) == false
+        else tieneStock(cantidad) == false
             BE-->>FE: 409 Conflict
             FE-->>U: mostrarAvisoStock(unidadesMax)
         end
@@ -38,7 +38,7 @@ sequenceDiagram
         FE->>BE: eliminarLinea(idLinea) : DELETE /api/carrito/lineas/idLinea
         BE->>BE: Carrito.eliminarLinea(idLinea)
         BE->>BE: Carrito.calcularSubtotal()
-        BE->>BE: Carrito.calcularEnvio()
+        BE->>BE: Carrito.calcularGastosEnvio()
         BE->>BE: Carrito.calcularTotal()
         BE->>DB: deleteLineaCarrito(idLinea)
         DB-->>BE: OK
