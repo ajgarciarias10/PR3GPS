@@ -1,17 +1,6 @@
-\textcolor{red}{\textbf{La primera respuesta generada por la IA produjo un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live y respetaba las reglas de la plantilla: una única asociación actor--caso de uso, relación «include» del caso base al incluido, relación «extend» discontinua del caso opcional al base, estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para el actor. No obstante, tras auditar el contenido frente a los criterios de aceptación de US-2 y al resto del modelo del proyecto, se aplicaron las siguientes correcciones y mejoras:
+La primera respuesta generada por la IA produjo un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live y respetaba las reglas de la plantilla: una única asociación actor--caso de uso, relación «include» del caso base al incluido, relación «extend» discontinua del caso opcional al base, estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para el actor. No obstante, tras auditar el contenido frente a los criterios de aceptación de US-2 y al resto del modelo del proyecto, se aplicaron las siguientes correcciones y mejoras:
 \begin{itemize}[leftmargin=*,nosep]
 \item \textbf{Criterio de tallas agotadas omitido:} El criterio de aceptación exige un selector interactivo que \emph{deshabilite las opciones agotadas}, pero la IA solo modelaba «Seleccionar Talla Interactiva». Se añadieron los casos incluidos «Mostrar selector de tallas» y «Deshabilitar tallas agotadas», y se mantuvo «Seleccionar talla» como caso incluido.
 \item \textbf{Flujo condicional de stock sin modelar:} La respuesta no contemplaba qué ocurre si la talla elegida se agota al añadirla al carrito. Se añadió «Mostrar aviso de talla agotada» como extensión de «Añadir al carrito» (coherente con la rama de stock insuficiente del diagrama de secuencia de US-2).
 \item \textbf{Límite del sistema con alcance mezclado y nombres inconsistentes:} El subgrafo se titulaba «Módulo de Catálogo y Detalle de Producto», mezclando el alcance de US-1 y US-2, y los identificadores (\texttt{UC2\_1}, \texttt{UC2\_2}) no indicaban su función, con nombres en mayúsculas iniciales distintos al resto del proyecto. Se renombró el límite a «Atelier Jaén - Ficha de producto», se usaron identificadores descriptivos y se unificó el estilo de los nombres.
-\end{itemize}}}
-
-Describid aquí los errores \textbf{reales} de la primera respuesta de la IA para el caso de uso de US-2 y cómo los corrigió el equipo. Puntos que hay que comprobar:
-\begin{itemize}[leftmargin=*,nosep]
-\item Más de una asociación actor-caso de uso (solo se permite una).
-\item Flecha include en sentido contrario (debe ir del caso base al incluido).
-\item Flecha extend en sentido contrario (debe ir del opcional al base) o no discontinua.
-\item Estereotipos escritos con < > o << >> en lugar de « ».
-\item Falta classDef/class del actor o falta el icono fa:fa-user.
-\item ID del subgraph repetido como ID de nodo; paréntesis en etiquetas.
-\item Casos de uso inventados que no aparecen en los criterios de aceptación, o criterios sin reflejar.
 \end{itemize}

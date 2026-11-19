@@ -1,17 +1,6 @@
-\textcolor{red}{\textbf{La primera respuesta generada por la IA produjo, precedido de un texto explicativo, un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live y respetaba las reglas de la plantilla: una única asociación actor--caso de uso, relaciones «include» con la dirección correcta, estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para el actor. En este caso la respuesta fue la más cercana a la solución final, por lo que las correcciones se centraron en el contenido:
+La primera respuesta generada por la IA produjo, precedido de un texto explicativo, un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live y respetaba las reglas de la plantilla: una única asociación actor--caso de uso, relaciones «include» con la dirección correcta, estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para el actor. En este caso la respuesta fue la más cercana a la solución final, por lo que las correcciones se centraron en el contenido:
 \begin{itemize}[leftmargin=*,nosep]
 \item \textbf{Flujo condicional de cupón no válido sin modelar:} La IA solo representaba el camino feliz mediante relaciones «include». El criterio de aceptación habla de validar el cupón contra la base de datos, lo que implica un resultado negativo (cupón inexistente o caducado; la entidad \texttt{CUPON} guarda su fecha de caducidad). Se añadió la relación «extend» «Mostrar error de cupón inválido o caducado» hacia «Aplicar cupón de descuento», coherente con la rama de error del diagrama de secuencia de US-9.
 \item \textbf{Validación incompleta:} «Validar cupón en base de datos» describe una técnica y no qué se comprueba. Se renombró como «Validar existencia y vigencia del cupón» y se fusionó la deducción del importe en «Recalcular y mostrar total con descuento», que refleja el criterio de deducción visual inmediata.
 \item \textbf{Identificadores y límite poco descriptivos:} Los identificadores \texttt{UC1}, \texttt{UC2} y \texttt{UC3} no indican su función, los nombres usaban mayúsculas iniciales en cada palabra y el límite «Módulo de Carrito y Promociones» abarcaba también el alcance de US-3. Se usaron identificadores descriptivos, se unificó el estilo y el límite pasó a titularse «Atelier Jaén - Cupones de descuento».
-\end{itemize}}}
-
-Describid aquí los errores \textbf{reales} de la primera respuesta de la IA para el caso de uso de US-9 y cómo los corrigió el equipo. Puntos que hay que comprobar:
-\begin{itemize}[leftmargin=*,nosep]
-\item Más de una asociación actor-caso de uso (solo se permite una).
-\item Flecha include en sentido contrario (debe ir del caso base al incluido).
-\item Flecha extend en sentido contrario (debe ir del opcional al base) o no discontinua.
-\item Estereotipos escritos con < > o << >> en lugar de « ».
-\item Falta classDef/class del actor o falta el icono fa:fa-user.
-\item ID del subgraph repetido como ID de nodo; paréntesis en etiquetas.
-\item Casos de uso inventados que no aparecen en los criterios de aceptación, o criterios sin reflejar.
 \end{itemize}

@@ -1,17 +1,6 @@
-\textcolor{red}{\textbf{La primera respuesta generada por la IA produjo un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live y respetaba las reglas de la plantilla: una única asociación actor--caso de uso, relaciones «include» con la dirección correcta, estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para el actor. No obstante, tras auditar el contenido frente a los criterios de aceptación de US-4 y al resto del modelo del proyecto, se aplicaron las siguientes correcciones y mejoras:
+La primera respuesta generada por la IA produjo un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live y respetaba las reglas de la plantilla: una única asociación actor--caso de uso, relaciones «include» con la dirección correcta, estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para el actor. No obstante, tras auditar el contenido frente a los criterios de aceptación de US-4 y al resto del modelo del proyecto, se aplicaron las siguientes correcciones y mejoras:
 \begin{itemize}[leftmargin=*,nosep]
 \item \textbf{Flujo de pago rechazado sin modelar:} La respuesta solo contemplaba el camino feliz. El diagrama de secuencia y el modelo de datos (entidad \texttt{PAGO} con estado aprobado o rechazado) exigen tratar el rechazo de la pasarela. Se añadió la relación «extend» «Mostrar error de pago conservando la cesta» hacia «Pagar pedido con tarjeta», con la flecha discontinua dirigida al caso base.
 \item \textbf{Pasos obligatorios del proceso omitidos:} La IA no incluía la validación de los datos de la tarjeta ni el registro del pedido, necesario para poder enviar el «número de pedido» que exige el criterio de aceptación. Se añadieron los casos incluidos «Validar datos de la tarjeta» y «Registrar pedido pagado», y se renombró «Verificar 3D Secure» como «Autenticar con 3D Secure» para coincidir con el diagrama de secuencia.
 \item \textbf{Límite del sistema con alcance mezclado y estilo inconsistente:} El subgrafo se titulaba «Módulo de Checkout y Pagos», un nombre que abarcaría también el pago con Bizum de US-7 (Sprint 2), y los nombres usaban mayúsculas iniciales distintas al resto del proyecto. Se renombró el límite a «Atelier Jaén - Checkout con tarjeta», se usaron identificadores descriptivos y se declaró el actor al inicio del diagrama, como en el resto de casos de uso.
-\end{itemize}}}
-
-Describid aquí los errores \textbf{reales} de la primera respuesta de la IA para el caso de uso de US-4 y cómo los corrigió el equipo. Puntos que hay que comprobar:
-\begin{itemize}[leftmargin=*,nosep]
-\item Más de una asociación actor-caso de uso (solo se permite una).
-\item Flecha include en sentido contrario (debe ir del caso base al incluido).
-\item Flecha extend en sentido contrario (debe ir del opcional al base) o no discontinua.
-\item Estereotipos escritos con < > o << >> en lugar de « ».
-\item Falta classDef/class del actor o falta el icono fa:fa-user.
-\item ID del subgraph repetido como ID de nodo; paréntesis en etiquetas.
-\item Casos de uso inventados que no aparecen en los criterios de aceptación, o criterios sin reflejar.
 \end{itemize}

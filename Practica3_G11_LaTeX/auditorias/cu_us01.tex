@@ -1,18 +1,7 @@
-\textcolor{red}{\textbf{La primera respuesta generada por la IA produjo un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live y respetaba las reglas de la plantilla: cabecera \texttt{flowchart LR}, \texttt{subgraph} como límite del sistema, casos de uso como nodos redondeados, actor con icono y salto de línea, una única asociación actor--caso de uso, relaciones «include» con la dirección correcta, estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para ocultar el borde del actor. No obstante, tras auditar el contenido frente a los criterios de aceptación de US-1 y al resto del modelo del proyecto, se aplicaron las siguientes correcciones y mejoras:
+La primera respuesta generada por la IA produjo un bloque \texttt{flowchart LR} sintácticamente válido, que renderizó sin errores en mermaid.live y respetaba las reglas de la plantilla: cabecera \texttt{flowchart LR}, \texttt{subgraph} como límite del sistema, casos de uso como nodos redondeados, actor con icono y salto de línea, una única asociación actor--caso de uso, relaciones «include» con la dirección correcta, estereotipos con comillas latinas y \texttt{classDef}/\texttt{class} para ocultar el borde del actor. No obstante, tras auditar el contenido frente a los criterios de aceptación de US-1 y al resto del modelo del proyecto, se aplicaron las siguientes correcciones y mejoras:
 \begin{itemize}[leftmargin=*,nosep]
 \item \textbf{Caso de uso «Calcular precio con IVA» incoherente con el modelo de datos:} La IA planteó el IVA como un cálculo del sistema. Sin embargo, el criterio de aceptación exige \emph{mostrar} el precio con IVA y el catálogo ya almacena ese valor (atributo \texttt{precio\_iva} de la entidad \texttt{PRODUCTO}). Se sustituyó por «Mostrar imagen, nombre y precio con IVA».
 \item \textbf{Caso de uso ambiguo que solapa con US-2:} «Mostrar ficha básica de producto» se confunde con la «Ficha de detalle de producto» de US-2 y no recoge explícitamente la imagen ni el nombre exigidos por los criterios. Se reformuló para reflejar exactamente los datos de la tarjeta del catálogo y se mantuvo «Mostrar distintivo de disponibilidad» como caso incluido propio.
 \item \textbf{Ausencia de relaciones «extend» (flujos condicionales):} La respuesta solo contenía relaciones «include». Se añadieron dos flujos opcionales: «Mostrar mensaje de catálogo vacío» extiende a «Ver catálogo principal» (coherente con la rama \emph{Catálogo vacío} del diagrama de secuencia de US-1) y «Mostrar aviso de producto agotado» extiende a «Mostrar distintivo de disponibilidad».
 \item \textbf{Identificadores y título poco descriptivos:} Los identificadores \texttt{CU\_US1\_1}, \texttt{CU\_US1\_2} y \texttt{CU\_US1\_3} no indican su función y el título del límite del sistema era genérico. Se renombraron con identificadores descriptivos (por ejemplo, \texttt{MostrarDatos}) y el límite pasó a titularse «Atelier Jaén - Catálogo de la tienda», con el caso principal alineado con el título de la historia («Ver catálogo principal»).
-\end{itemize}}}
-
-Describid aquí los errores \textbf{reales} de la primera respuesta de la IA para el caso de uso de US-1 y cómo los corrigió el equipo. Puntos que hay que comprobar:
-\begin{itemize}[leftmargin=*,nosep]
-\item Más de una asociación actor-caso de uso (solo se permite una).
-\item Flecha include en sentido contrario (debe ir del caso base al incluido).
-\item Flecha extend en sentido contrario (debe ir del opcional al base) o no discontinua.
-\item Estereotipos escritos con < > o << >> en lugar de « ».
-\item Falta classDef/class del actor o falta el icono fa:fa-user.
-\item ID del subgraph repetido como ID de nodo; paréntesis en etiquetas.
-\item Casos de uso inventados que no aparecen en los criterios de aceptación, o criterios sin reflejar.
 \end{itemize}
